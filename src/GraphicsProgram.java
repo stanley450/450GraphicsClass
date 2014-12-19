@@ -1,14 +1,13 @@
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-import javax.swing.*;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-
-import java.awt.GridLayout;
+import javax.swing.SwingUtilities;
 
 public class GraphicsProgram extends JFrame {
 
@@ -18,6 +17,11 @@ public class GraphicsProgram extends JFrame {
 		private int[] defYPos = new int[5];
 		private int[] currXPos = new int[5];
 		private int[] currYPos = new int[5];
+		private int midXPnt;
+		private int midYPnt;
+
+		private double[] scaleArrayX = new double[5];
+		private double[] scaleArrayY = new double[5];
 
 		private Boolean drawTrangle = true;
 
@@ -26,6 +30,22 @@ public class GraphicsProgram extends JFrame {
 			setDefault();
 			setFocusable(true);
 
+			// scale array top p1
+			scaleArrayX[0] = 0;
+			scaleArrayY[0] = -150;
+			// scale array bottom left p2
+			scaleArrayX[1] = -150;
+			scaleArrayY[1] = 150;
+			// scale array bottom right p3
+			scaleArrayX[2] = 150;
+			scaleArrayY[2] = 150;
+			// scale array inner left p4
+			scaleArrayX[3] = -75;
+			scaleArrayY[3] = 100;
+			// scale array inner right p5
+			scaleArrayX[4] = 75;
+			scaleArrayY[4] = 100;
+			// scale array midpnt
 		}
 
 		public void setDefault() {
@@ -44,9 +64,13 @@ public class GraphicsProgram extends JFrame {
 			// 325,350 inside bottom right
 			defXPos[4] = 325;
 			defYPos[4] = 350;
+			// 250,250 origin/midpoint
+			midXPnt = 250;
+			midYPnt = 250;
 
 			currXPos = defXPos;
 			currYPos = defYPos;
+
 		}
 
 		private void drawTrangle(Graphics g) {
@@ -56,62 +80,214 @@ public class GraphicsProgram extends JFrame {
 			Graphics2D g2d = (Graphics2D) g;
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);// top to outside bottom left
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);// top to outside bottom right
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);// top to inside bottom left
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);// inside bottom right to top
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);// top
+																				// to
+																				// outside
+																				// bottom
+																				// left
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);// top
+																				// to
+																				// outside
+																				// bottom
+																				// right
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);// top
+																				// to
+																				// inside
+																				// bottom
+																				// left
+			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);// inside
+																				// bottom
+																				// right
+																				// to
+																				// top
 			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);// outside bottom left to ouside bottom right
+			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);// outside
+																				// bottom
+																				// left
+																				// to
+																				// ouside
+																				// bottom
+																				// right
 			g2d.setColor(Color.RED); // back side
-			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);// inside bottom left to inside bottom right
+			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);// inside
+																				// bottom
+																				// left
+																				// to
+																				// inside
+																				// bottom
+																				// right
 			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);// outside bottom left to inside bottom left
+			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);// outside
+																				// bottom
+																				// left
+																				// to
+																				// inside
+																				// bottom
+																				// left
 			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);// inside bottom right to outside bottom right
+			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);// inside
+																				// bottom
+																				// right
+																				// to
+																				// outside
+																				// bottom
+																				// right
 			g2d.setColor(Color.BLACK);
+
+			for (int i = 0; i < 5; i++) {
+				System.out.println("p" + i + " = " + "(" + currXPos[i] + ","
+						+ currYPos[i] + ")");
+			}
+			System.out.println("object center = (" + midXPnt + "," + midYPnt
+					+ ")");
 
 		}
 
 		public void moveUp() {
+			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				currYPos[i] = currYPos[i] - 10;
+				if (!(currYPos[i] <= 0)) {
+					actionBool = true;
+				} else {
+					actionBool = false;
+					break;
+				}
+			}
+
+			if (actionBool == true) {
+				for (int i = 0; i < 5; i++) {
+					currYPos[i] = currYPos[i] - 10;
+				}
+				midYPnt = midYPnt - 10;
 			}
 		}
 
 		public void moveDwn() {
+			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				currYPos[i] = currYPos[i] + 10;
+				if (!(currYPos[i] >= 500)) {
+					actionBool = true;
+				} else {
+					actionBool = false;
+					break;
+				}
+			}
+
+			if (actionBool == true) {
+				for (int i = 0; i < 5; i++) {
+					currYPos[i] = currYPos[i] + 10;
+				}
+				midYPnt = midYPnt + 10;
 			}
 		}
 
 		public void moveRght() {
+			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				currXPos[i] = currXPos[i] + 10;
+				if (!(currXPos[i] >= 500)) {
+					actionBool = true;
+				} else {
+					actionBool = false;
+					break;
+				}
+			}
+
+			if (actionBool == true) {
+				for (int i = 0; i < 5; i++) {
+					currXPos[i] = currXPos[i] + 10;
+				}
+				midXPnt = midXPnt + 10;
 			}
 		}
 
 		public void moveLft() {
+			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				currXPos[i] = currXPos[i] - 10;
+				if (!(currXPos[i] <= 0)) {
+					actionBool = true;
+				} else {
+					actionBool = false;
+					break;
+				}
+			}
+
+			if (actionBool == true) {
+				for (int i = 0; i < 5; i++) {
+					currXPos[i] = currXPos[i] - 10;
+				}
+				midXPnt = midXPnt - 10;
 			}
 		}
 
 		public void scaleUp() {
+			double[] tempX = scaleArrayX;
+			double[] tempY = scaleArrayY;
+
+			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				currXPos[i] = (int) (currXPos[i] * 1.1);
-				currYPos[i] = (int) (currYPos[i] * 1.1);
+				if (!(currXPos[i] >= 500 || currYPos[i] >= 500 || currYPos[i] <= 0 || currXPos[i] <= 0)) {
+					actionBool = true;
+				} else {
+					actionBool = false;
+					break;
+				}
+			}
+
+			if (actionBool == true) {
+				for (int i = 0; i < 5; i++) {
+					tempX[i] = (tempX[i] * (1.05));
+					currXPos[i] = (int) tempX[i] + midXPnt;
+					tempY[i] = (tempY[i] * (1.05));
+					currYPos[i] = (int) tempY[i] + midYPnt;
+				}
 			}
 		}
 
 		public void scaleDwn() {
+			double[] tempX = scaleArrayX;
+			double[] tempY = scaleArrayY;
+
 			for (int i = 0; i < 5; i++) {
-				currXPos[i] = (int) (currXPos[i] * .9);
-				currYPos[i] = (int) (currYPos[i] * .9);
+				tempX[i] = (tempX[i] * (.95));
+				currXPos[i] = (int) tempX[i] + midXPnt;
+				tempY[i] = (tempY[i] * (.95));
+				currYPos[i] = (int) tempY[i] + midYPnt;
 			}
 		}
-		
-		public void rotateZRight(){
+
+		public void rotateZRight() { // clockwise
+			double theta = -25.0;
+
+			double[] tempX = scaleArrayX;
+			double[] tempY = scaleArrayY;
+
+			for (int i = 0; i < 5; i++) {
+				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i]
+						* Math.sin(theta)));
+				currXPos[i] = (int) tempX[i] + midXPnt;
+				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i]
+						* Math.cos(theta)));
+				currYPos[i] = (int) tempY[i] + midYPnt;
+			}
+
+		}
+
+		public void rotateZLeft() { // counter clockwise
 			
+			double theta = 25.0;
+
+			double[] tempX = scaleArrayX;
+			double[] tempY = scaleArrayY;
+
+			for (int i = 0; i < 5; i++) {
+				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i]
+						* Math.sin(theta)));
+				currXPos[i] = (int) tempX[i] + midXPnt;
+				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i]
+						* Math.cos(theta)));
+				currYPos[i] = (int) tempY[i] + midYPnt;
+			}
+
 		}
 
 		private void doStuff(Graphics g) {
@@ -126,7 +302,7 @@ public class GraphicsProgram extends JFrame {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 
-				doStuff(g);
+			doStuff(g);
 			if (drawTrangle) {
 				drawTrangle(g);
 			}
@@ -138,7 +314,7 @@ public class GraphicsProgram extends JFrame {
 	public GraphicsProgram() {
 
 		setPreferredSize(new Dimension(500, 500));
-		setMinimumSize(new Dimension(500, 500));
+		setMinimumSize(new Dimension(520, 540));
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Please Work");
@@ -152,35 +328,48 @@ public class GraphicsProgram extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_UP:
+				case KeyEvent.VK_U:
 					mangle.moveUp();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_DOWN:
+				case KeyEvent.VK_D:
 					mangle.moveDwn();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_RIGHT:
+				case KeyEvent.VK_R:
 					mangle.moveRght();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_LEFT:
+				case KeyEvent.VK_L:
 					mangle.moveLft();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_P:
-					mangle.scaleUp();
+				case KeyEvent.VK_UP:
+					if (e.isShiftDown()) {
+						mangle.scaleUp();
+						mangle.paintComponent(getGraphics());
+					}
+					break;
+				case KeyEvent.VK_DOWN:
+					if (e.isShiftDown()) {
+						mangle.scaleDwn();
+						mangle.paintComponent(getGraphics());
+					}
+					break;
+				case KeyEvent.VK_PERIOD:
+					mangle.rotateZRight();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_L:
-					mangle.scaleDwn();
+				case KeyEvent.VK_COMMA:
+					mangle.rotateZLeft();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_R:
+				case KeyEvent.VK_ENTER:
 					mangle.setDefault();
 					mangle.paintComponent(getGraphics());
 					break;
 				}
+				mangle.repaint();
 			}
 		});
 	}
