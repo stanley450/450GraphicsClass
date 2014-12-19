@@ -56,58 +56,18 @@ public class GraphicsProgram extends JFrame {
 			Graphics2D g2d = (Graphics2D) g;
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);// top
-																				// to
-																				// outside
-																				// bottom
-																				// left
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);// top
-																				// to
-																				// outside
-																				// bottom
-																				// right
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);// top
-																				// to
-																				// inside
-																				// bottom
-																				// left
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);// inside
-																				// bottom
-																				// right
-																				// to
-																				// top
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);// top to outside bottom left
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);// top to outside bottom right
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);// top to inside bottom left
+			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);// inside bottom right to top
 			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);// outside
-																				// bottom
-																				// left
-																				// to
-																				// ouside
-																				// bottom
-																				// right
+			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);// outside bottom left to ouside bottom right
 			g2d.setColor(Color.RED); // back side
-			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);// inside
-																				// bottom
-																				// left
-																				// to
-																				// inside
-																				// bottom
-																				// right
+			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);// inside bottom left to inside bottom right
 			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);// outside
-																				// bottom
-																				// left
-																				// to
-																				// inside
-																				// bottom
-																				// left
+			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);// outside bottom left to inside bottom left
 			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);// inside
-																				// bottom
-																				// right
-																				// to
-																				// outside
-																				// bottom
-																				// right
+			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);// inside bottom right to outside bottom right
 			g2d.setColor(Color.BLACK);
 
 		}
