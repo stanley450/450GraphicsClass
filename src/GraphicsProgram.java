@@ -225,7 +225,8 @@ public class GraphicsProgram extends JFrame {
 
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 500 || currYPos[i] >= 500 || currYPos[i] <= 0 || currXPos[i] <= 0)) {
+				if (!(currXPos[i] >= 500 || currYPos[i] >= 500
+						|| currYPos[i] <= 0 || currXPos[i] <= 0)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -262,32 +263,48 @@ public class GraphicsProgram extends JFrame {
 			double[] tempY = scaleArrayY;
 
 			for (int i = 0; i < 5; i++) {
-				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i]
-						* Math.sin(theta)));
+				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i] * Math
+						.sin(theta)));
 				currXPos[i] = (int) tempX[i] + midXPnt;
-				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i]
-						* Math.cos(theta)));
+				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i] * Math
+						.cos(theta)));
 				currYPos[i] = (int) tempY[i] + midYPnt;
 			}
 
 		}
 
 		public void rotateZLeft() { // counter clockwise
-			
+
 			double theta = 25.0;
 
 			double[] tempX = scaleArrayX;
 			double[] tempY = scaleArrayY;
 
 			for (int i = 0; i < 5; i++) {
-				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i]
-						* Math.sin(theta)));
+				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i] * Math
+						.sin(theta)));
 				currXPos[i] = (int) tempX[i] + midXPnt;
-				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i]
-						* Math.cos(theta)));
+				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i] * Math
+						.cos(theta)));
 				currYPos[i] = (int) tempY[i] + midYPnt;
 			}
 
+		}
+
+		public void rotateYUp() {
+
+		}
+
+		public void rotateYDown() {
+
+		}
+		
+		public void rotateXRight(){
+			
+		}
+		
+		public void rotateXLeft(){
+			
 		}
 
 		private void doStuff(Graphics g) {
