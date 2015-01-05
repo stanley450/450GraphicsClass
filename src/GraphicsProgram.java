@@ -15,20 +15,29 @@ public class GraphicsProgram extends JFrame {
 
 		private int[] defXPos = new int[5];
 		private int[] defYPos = new int[5];
+		
 		private int[] currXPos = new int[5];
 		private int[] currYPos = new int[5];
+		
 		private int midXPnt;
 		private int midYPnt;
+		
+		private int z = 50;//distance from eye to screen in z axis
+		private int coordz = 250;
+		private int dis = 100;//distance from screen to center point in z axis
 
 		private double[] scaleArrayX = new double[5];
 		private double[] scaleArrayY = new double[5];
 
 		private Boolean drawTrangle = true;
+		
+		public int perspective(int a, int b){
+			return z*(a - coordz)/(z + b) + a;
+		}
 
 		public Trangle() {
 			setBackground(Color.WHITE);
 			setDefault();
-			setFocusable(true);
 
 			// scale array top p1
 			scaleArrayX[0] = 0;
@@ -45,28 +54,27 @@ public class GraphicsProgram extends JFrame {
 			// scale array inner right p5
 			scaleArrayX[4] = 75;
 			scaleArrayY[4] = 100;
-			// scale array midpnt
 		}
 
 		public void setDefault() {
 			// 250,100 the top vertex
-			defXPos[0] = 250;
-			defYPos[0] = 100;
+			defXPos[0] = perspective(250, dis);
+			defYPos[0] = perspective(100, dis);
 			// 100,400 outside bottom left
-			defXPos[1] = 100;
-			defYPos[1] = 400;
+			defXPos[1] = perspective(100, dis);
+			defYPos[1] = perspective(400, dis);
 			// 400,400 outside bottom right
-			defXPos[2] = 400;
-			defYPos[2] = 400;
+			defXPos[2] = perspective(400, dis);
+			defYPos[2] = perspective(400, dis);
 			// 175,350 inside bottom left
-			defXPos[3] = 175;
-			defYPos[3] = 350;
+			defXPos[3] = perspective(175, dis);
+			defYPos[3] = perspective(350, dis);
 			// 325,350 inside bottom right
-			defXPos[4] = 325;
-			defYPos[4] = 350;
+			defXPos[4] = perspective(325, dis);
+			defYPos[4] = perspective(350, dis);
 			// 250,250 origin/midpoint
-			midXPnt = 250;
-			midYPnt = 250;
+			midXPnt = perspective(250, dis);
+			midYPnt = perspective(250, dis);
 
 			currXPos = defXPos;
 			currYPos = defYPos;
@@ -397,7 +405,6 @@ public class GraphicsProgram extends JFrame {
 
 			@Override
 			public void run() {
-
 				GraphicsProgram lines = new GraphicsProgram();
 				lines.keyListener();
 				lines.setVisible(true);
