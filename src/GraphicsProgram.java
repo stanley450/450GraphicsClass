@@ -88,58 +88,26 @@ public class GraphicsProgram extends JFrame {
 			Graphics2D g2d = (Graphics2D) g;
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);// top
-																				// to
-																				// outside
-																				// bottom
-																				// left
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);// top
-																				// to
-																				// outside
-																				// bottom
-																				// right
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);// top
-																				// to
-																				// inside
-																				// bottom
-																				// left
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);// inside
-																				// bottom
-																				// right
-																				// to
-																				// top
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);
+				// top to outside bottom left
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);
+				// top to outside bottom right
+			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);
+				// top to inside bottom left
+			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);
+				// inside bottom right to top
 			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);// outside
-																				// bottom
-																				// left
-																				// to
-																				// ouside
-																				// bottom
-																				// right
+			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);
+				// outside bottom left to outside bottom right
 			g2d.setColor(Color.RED); // back side
-			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);// inside
-																				// bottom
-																				// left
-																				// to
-																				// inside
-																				// bottom
-																				// right
+			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);
+				// inside bottom left to inside bottom right
 			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);// outside
-																				// bottom
-																				// left
-																				// to
-																				// inside
-																				// bottom
-																				// left
+			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);
+				// outside bottom left to inside bottom left
 			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);// inside
-																				// bottom
-																				// right
-																				// to
-																				// outside
-																				// bottom
-																				// right
+			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);
+				// inside bottom right to outside bottom right
 			g2d.setColor(Color.BLACK);
 
 			for (int i = 0; i < 5; i++) {
@@ -352,44 +320,45 @@ public class GraphicsProgram extends JFrame {
 		mangle.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
+				System.out.println(e.getKeyCode());
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_U:
+				case KeyEvent.VK_U: //press "u" key on the keyboard to move pyramid up
 					mangle.moveUp();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_D:
+				case KeyEvent.VK_D: //press "d" key on the keyboard to move pyramid down 
 					mangle.moveDwn();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_R:
+				case KeyEvent.VK_R: //press "r" key on the keyboard to move pyramid right
 					mangle.moveRght();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_L:
+				case KeyEvent.VK_L: //press "l" key on keyboard to move pyramid left
 					mangle.moveLft();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_UP:
+				case KeyEvent.VK_UP: //press shift + up arrow to scale the pyramid up in size
 					if (e.isShiftDown()) {
 						mangle.scaleUp();
 						mangle.paintComponent(getGraphics());
 					}
 					break;
-				case KeyEvent.VK_DOWN:
+				case KeyEvent.VK_DOWN: //press shift + down arrow to scale the pyramid down in size
 					if (e.isShiftDown()) {
 						mangle.scaleDwn();
 						mangle.paintComponent(getGraphics());
 					}
 					break;
-				case KeyEvent.VK_PERIOD:
+				case KeyEvent.VK_PERIOD: //press the ">" key to rotate the pyramid right along the z axis
 					mangle.rotateZRight();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_COMMA:
+				case KeyEvent.VK_COMMA: //press the "<" key to rortate the pyramid left along the z axis
 					mangle.rotateZLeft();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_ENTER:
+				case KeyEvent.VK_ENTER: //press enter to return to the default position
 					mangle.setDefault();
 					mangle.paintComponent(getGraphics());
 					break;
@@ -400,9 +369,7 @@ public class GraphicsProgram extends JFrame {
 	}
 
 	public static void main(String[] args) {
-
 		SwingUtilities.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 				GraphicsProgram lines = new GraphicsProgram();
