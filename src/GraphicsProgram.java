@@ -70,35 +70,37 @@ public class GraphicsProgram extends JFrame {
 			drawTrangle = true;
 
 			Graphics2D g2d = (Graphics2D) g;
+			
+			int off = 450;
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine(currXPos[0] + 200, currYPos[0] + 200,
-					currXPos[1] + 200, currYPos[1] + 200);
+			g2d.drawLine(currXPos[0] + off, currYPos[0] + off,
+					currXPos[1] + off, currYPos[1] + off);
 			// top to outside bottom left
-			g2d.drawLine(currXPos[0] + 200, currYPos[0] + 200,
-					currXPos[2] + 200, currYPos[2] + 200);
+			g2d.drawLine(currXPos[0] + off, currYPos[0] + off,
+					currXPos[2] + off, currYPos[2] + off);
 			// top to outside bottom right
-			g2d.drawLine(currXPos[0] + 200, currYPos[0] + 200,
-					currXPos[3] + 200, currYPos[3] + 200);
+			g2d.drawLine(currXPos[0] + off, currYPos[0] + off,
+					currXPos[3] + off, currYPos[3] + off);
 			// top to inside bottom left
-			g2d.drawLine(currXPos[4] + 200, currYPos[4] + 200,
-					currXPos[0] + 200, currYPos[0] + 200);
+			g2d.drawLine(currXPos[4] + off, currYPos[4] + off,
+					currXPos[0] + off, currYPos[0] + off);
 			// inside bottom right to top
 			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine(currXPos[1] + 200, currYPos[1] + 200,
-					currXPos[2] + 200, currYPos[2] + 200);
+			g2d.drawLine(currXPos[1] + off, currYPos[1] + off,
+					currXPos[2] + off, currYPos[2] + off);
 			// outside bottom left to outside bottom right
 			g2d.setColor(Color.RED); // back side
-			g2d.drawLine(currXPos[3] + 200, currYPos[3] + 200,
-					currXPos[4] + 200, currYPos[4] + 200);
+			g2d.drawLine(currXPos[3] + off, currYPos[3] + off,
+					currXPos[4] + off, currYPos[4] + off);
 			// inside bottom left to inside bottom right
 			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine(currXPos[1] + 200, currYPos[1] + 200,
-					currXPos[3] + 200, currYPos[3] + 200);
+			g2d.drawLine(currXPos[1] + off, currYPos[1] + off,
+					currXPos[3] + off, currYPos[3] + off);
 			// outside bottom left to inside bottom left
 			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine(currXPos[4] + 200, currYPos[4] + 200,
-					currXPos[2] + 200, currYPos[2] + 200);
+			g2d.drawLine(currXPos[4] + off, currYPos[4] + off,
+					currXPos[2] + off, currYPos[2] + off);
 			// inside bottom right to outside bottom right
 			g2d.setColor(Color.BLACK);
 
@@ -112,7 +114,7 @@ public class GraphicsProgram extends JFrame {
 		public void moveUp() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currYPos[i] <= -200)) {
+				if (!(currYPos[i] <= -550)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -131,7 +133,7 @@ public class GraphicsProgram extends JFrame {
 		public void moveDwn() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currYPos[i] >= 300)) {
+				if (!(currYPos[i] >= 550)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -150,7 +152,7 @@ public class GraphicsProgram extends JFrame {
 		public void moveRght() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 300)) {
+				if (!(currXPos[i] >= 550)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -169,7 +171,7 @@ public class GraphicsProgram extends JFrame {
 		public void moveLft() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] <= -200)) {
+				if (!(currXPos[i] <= -550)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -188,8 +190,8 @@ public class GraphicsProgram extends JFrame {
 		public void scaleUp() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 300 || currYPos[i] >= 300
-						|| currYPos[i] <= -200 || currXPos[i] <= -200)) {
+				if (!(currXPos[i] >= 550 || currYPos[i] >= 550
+						|| currYPos[i] <= -550 || currXPos[i] <= -550)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -311,8 +313,8 @@ public class GraphicsProgram extends JFrame {
 
 			Graphics2D g2d = (Graphics2D) g;
 
-			g2d.drawLine(250, 0, 250, 500);
-			g2d.drawLine(0, 250, 500, 250);
+			g2d.drawLine(500, 0, 500, 1000);
+			g2d.drawLine(0, 500, 1000, 500);
 		}
 
 		@Override
@@ -330,8 +332,8 @@ public class GraphicsProgram extends JFrame {
 
 	public GraphicsProgram() {
 
-		setPreferredSize(new Dimension(500, 500));
-		setMinimumSize(new Dimension(520, 540));
+		setPreferredSize(new Dimension(1000, 1000));
+		setMinimumSize(new Dimension(1000, 1000));
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Please Work");
@@ -343,7 +345,7 @@ public class GraphicsProgram extends JFrame {
 	public void keyListener() {
 		mangle.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_U: // press "u" key on the keyboard to move
 									// pyramid up
