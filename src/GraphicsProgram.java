@@ -15,69 +15,53 @@ public class GraphicsProgram extends JFrame {
 
 		private int[] defXPos = new int[5];
 		private int[] defYPos = new int[5];
-		
+		private int[] defZPos = new int[5];
+
 		private int[] currXPos = new int[5];
 		private int[] currYPos = new int[5];
-		
-		private int midXPnt;
-		private int midYPnt;
-		
-		private int z = 50;//distance from eye to screen in z axis
-		private int coordz = 250;
-		private int dis = 100;//distance from screen to center point in z axis
 
-		private double[] scaleArrayX = new double[5];
-		private double[] scaleArrayY = new double[5];
+		private int eye = 1000;
 
 		private Boolean drawTrangle = true;
-		
-		public int perspective(int a, int b){
-			return z*(a - coordz)/(z + b) + a;
+
+		public int perspective(int point, int zdis) {
+			return (eye * point) / (eye + zdis) + 50;
 		}
 
 		public Trangle() {
 			setBackground(Color.WHITE);
 			setDefault();
-
-			// scale array top p1
-			scaleArrayX[0] = 0;
-			scaleArrayY[0] = -150;
-			// scale array bottom left p2
-			scaleArrayX[1] = -150;
-			scaleArrayY[1] = 150;
-			// scale array bottom right p3
-			scaleArrayX[2] = 150;
-			scaleArrayY[2] = 150;
-			// scale array inner left p4
-			scaleArrayX[3] = -75;
-			scaleArrayY[3] = 100;
-			// scale array inner right p5
-			scaleArrayX[4] = 75;
-			scaleArrayY[4] = 100;
+			setFocusable(true);
 		}
 
 		public void setDefault() {
 			// 250,100 the top vertex
-			defXPos[0] = perspective(250, dis);
-			defYPos[0] = perspective(100, dis);
+			defXPos[0] = 0;
+			defYPos[0] = -150;
+			defZPos[0] = 350;
 			// 100,400 outside bottom left
-			defXPos[1] = perspective(100, dis);
-			defYPos[1] = perspective(400, dis);
+			defXPos[1] = -150;
+			defYPos[1] = 150;
+			defZPos[1] = 100;
 			// 400,400 outside bottom right
-			defXPos[2] = perspective(400, dis);
-			defYPos[2] = perspective(400, dis);
+			defXPos[2] = 150;
+			defYPos[2] = 150;
+			defZPos[2] = 100;
 			// 175,350 inside bottom left
-			defXPos[3] = perspective(175, dis);
-			defYPos[3] = perspective(350, dis);
+			defXPos[3] = -150;
+			defYPos[3] = 150;
+			defZPos[3] = 600;
 			// 325,350 inside bottom right
-			defXPos[4] = perspective(325, dis);
-			defYPos[4] = perspective(350, dis);
-			// 250,250 origin/midpoint
-			midXPnt = perspective(250, dis);
-			midYPnt = perspective(250, dis);
+			defXPos[4] = 150;
+			defYPos[4] = 150;
+			defZPos[4] = 600;
 
-			currXPos = defXPos;
-			currYPos = defYPos;
+			System.out.println(perspective(defXPos[0], defZPos[0]));
+
+			for (int i = 0; i < 5; i++) {
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			}
 
 		}
 
@@ -88,41 +72,47 @@ public class GraphicsProgram extends JFrame {
 			Graphics2D g2d = (Graphics2D) g;
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[1], currYPos[1]);
-				// top to outside bottom left
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[2], currYPos[2]);
-				// top to outside bottom right
-			g2d.drawLine(currXPos[0], currYPos[0], currXPos[3], currYPos[3]);
-				// top to inside bottom left
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[0], currYPos[0]);
-				// inside bottom right to top
+			g2d.drawLine(currXPos[0] + 200, currYPos[0] + 200,
+					currXPos[1] + 200, currYPos[1] + 200);
+			// top to outside bottom left
+			g2d.drawLine(currXPos[0] + 200, currYPos[0] + 200,
+					currXPos[2] + 200, currYPos[2] + 200);
+			// top to outside bottom right
+			g2d.drawLine(currXPos[0] + 200, currYPos[0] + 200,
+					currXPos[3] + 200, currYPos[3] + 200);
+			// top to inside bottom left
+			g2d.drawLine(currXPos[4] + 200, currYPos[4] + 200,
+					currXPos[0] + 200, currYPos[0] + 200);
+			// inside bottom right to top
 			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[2], currYPos[2]);
-				// outside bottom left to outside bottom right
+			g2d.drawLine(currXPos[1] + 200, currYPos[1] + 200,
+					currXPos[2] + 200, currYPos[2] + 200);
+			// outside bottom left to outside bottom right
 			g2d.setColor(Color.RED); // back side
-			g2d.drawLine(currXPos[3], currYPos[3], currXPos[4], currYPos[4]);
-				// inside bottom left to inside bottom right
+			g2d.drawLine(currXPos[3] + 200, currYPos[3] + 200,
+					currXPos[4] + 200, currYPos[4] + 200);
+			// inside bottom left to inside bottom right
 			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine(currXPos[1], currYPos[1], currXPos[3], currYPos[3]);
-				// outside bottom left to inside bottom left
+			g2d.drawLine(currXPos[1] + 200, currYPos[1] + 200,
+					currXPos[3] + 200, currYPos[3] + 200);
+			// outside bottom left to inside bottom left
 			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine(currXPos[4], currYPos[4], currXPos[2], currYPos[2]);
-				// inside bottom right to outside bottom right
+			g2d.drawLine(currXPos[4] + 200, currYPos[4] + 200,
+					currXPos[2] + 200, currYPos[2] + 200);
+			// inside bottom right to outside bottom right
 			g2d.setColor(Color.BLACK);
 
 			for (int i = 0; i < 5; i++) {
 				System.out.println("p" + i + " = " + "(" + currXPos[i] + ","
 						+ currYPos[i] + ")");
 			}
-			System.out.println("object center = (" + midXPnt + "," + midYPnt
-					+ ")");
 
 		}
 
 		public void moveUp() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currYPos[i] <= 0)) {
+				if (!(currYPos[i] <= -200)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -132,16 +122,16 @@ public class GraphicsProgram extends JFrame {
 
 			if (actionBool == true) {
 				for (int i = 0; i < 5; i++) {
-					currYPos[i] = currYPos[i] - 10;
+					defYPos[i] = defYPos[i] - 10;
+					currYPos[i] = perspective(defYPos[i], defZPos[i]);
 				}
-				midYPnt = midYPnt - 10;
 			}
 		}
 
 		public void moveDwn() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currYPos[i] >= 500)) {
+				if (!(currYPos[i] >= 300)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -151,16 +141,16 @@ public class GraphicsProgram extends JFrame {
 
 			if (actionBool == true) {
 				for (int i = 0; i < 5; i++) {
-					currYPos[i] = currYPos[i] + 10;
+					defYPos[i] = defYPos[i] + 10;
+					currYPos[i] = perspective(defYPos[i], defZPos[i]);
 				}
-				midYPnt = midYPnt + 10;
 			}
 		}
 
 		public void moveRght() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 500)) {
+				if (!(currXPos[i] >= 300)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -170,16 +160,16 @@ public class GraphicsProgram extends JFrame {
 
 			if (actionBool == true) {
 				for (int i = 0; i < 5; i++) {
-					currXPos[i] = currXPos[i] + 10;
+					defXPos[i] = defXPos[i] + 10;
+					currXPos[i] = perspective(defXPos[i], defZPos[i]);
 				}
-				midXPnt = midXPnt + 10;
 			}
 		}
 
 		public void moveLft() {
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] <= 0)) {
+				if (!(currXPos[i] <= -200)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -189,20 +179,17 @@ public class GraphicsProgram extends JFrame {
 
 			if (actionBool == true) {
 				for (int i = 0; i < 5; i++) {
-					currXPos[i] = currXPos[i] - 10;
+					defXPos[i] = defXPos[i] - 10;
+					currXPos[i] = perspective(defXPos[i], defZPos[i]);
 				}
-				midXPnt = midXPnt - 10;
 			}
 		}
 
 		public void scaleUp() {
-			double[] tempX = scaleArrayX;
-			double[] tempY = scaleArrayY;
-
 			Boolean actionBool = false;
 			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 500 || currYPos[i] >= 500
-						|| currYPos[i] <= 0 || currXPos[i] <= 0)) {
+				if (!(currXPos[i] >= 300 || currYPos[i] >= 300
+						|| currYPos[i] <= -200 || currXPos[i] <= -200)) {
 					actionBool = true;
 				} else {
 					actionBool = false;
@@ -212,39 +199,45 @@ public class GraphicsProgram extends JFrame {
 
 			if (actionBool == true) {
 				for (int i = 0; i < 5; i++) {
-					tempX[i] = (tempX[i] * (1.05));
-					currXPos[i] = (int) tempX[i] + midXPnt;
-					tempY[i] = (tempY[i] * (1.05));
-					currYPos[i] = (int) tempY[i] + midYPnt;
+					defXPos[i] = (int) (defXPos[i] * 1.05);
+					defYPos[i] = (int) (defYPos[i] * 1.05);
+					currXPos[i] = perspective(defXPos[i], defZPos[i]);
+					currYPos[i] = perspective(defYPos[i], defZPos[i]);
 				}
 			}
 		}
 
 		public void scaleDwn() {
-			double[] tempX = scaleArrayX;
-			double[] tempY = scaleArrayY;
-
 			for (int i = 0; i < 5; i++) {
-				tempX[i] = (tempX[i] * (.95));
-				currXPos[i] = (int) tempX[i] + midXPnt;
-				tempY[i] = (tempY[i] * (.95));
-				currYPos[i] = (int) tempY[i] + midYPnt;
+				defXPos[i] = (int) (defXPos[i] * .95);
+				defYPos[i] = (int) (defYPos[i] * .95);
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			}
+		}
+		
+		public void moveForward() {
+			for(int i = 0; i < 5; i++){
+				defZPos[i] = defZPos[i] - 100;
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+			}
+		}
+		
+		public void moveBackward() {
+			for(int i = 0; i < 5; i++){
+				defZPos[i] = defZPos[i] + 100;
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
 			}
 		}
 
 		public void rotateZRight() { // clockwise
 			double theta = -25.0;
 
-			double[] tempX = scaleArrayX;
-			double[] tempY = scaleArrayY;
-
 			for (int i = 0; i < 5; i++) {
-				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i] * Math
-						.sin(theta)));
-				currXPos[i] = (int) tempX[i] + midXPnt;
-				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i] * Math
-						.cos(theta)));
-				currYPos[i] = (int) tempY[i] + midYPnt;
+				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defYPos[i] * Math.sin(theta));
+				defYPos[i] = (int) (defXPos[i] * Math.sin(theta) + defYPos[i] * Math.cos(theta));
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
 			}
 
 		}
@@ -253,34 +246,65 @@ public class GraphicsProgram extends JFrame {
 
 			double theta = 25.0;
 
-			double[] tempX = scaleArrayX;
-			double[] tempY = scaleArrayY;
-
 			for (int i = 0; i < 5; i++) {
-				tempX[i] = ((tempX[i] * Math.cos(theta)) - (tempY[i] * Math
-						.sin(theta)));
-				currXPos[i] = (int) tempX[i] + midXPnt;
-				tempY[i] = ((tempX[i] * Math.sin(theta)) + (tempY[i] * Math
-						.cos(theta)));
-				currYPos[i] = (int) tempY[i] + midYPnt;
+				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defYPos[i] * Math.sin(theta));
+				defYPos[i] = (int) (defXPos[i] * Math.sin(theta) + defYPos[i] * Math.cos(theta));
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
 			}
 
 		}
 
-		public void rotateYUp() {
+		public void rotateYRight() {
 
-		}
-
-		public void rotateYDown() {
-
-		}
-		
-		public void rotateXRight(){
+			double theta = 25.0;
 			
+			for (int i = 0; i < 5; i++) {
+				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defZPos[i] * Math.sin(theta));
+				defZPos[i] = (int) (defXPos[i] * Math.sin(theta) + defZPos[i] * Math.cos(theta));
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			}
+
 		}
-		
-		public void rotateXLeft(){
+
+		public void rotateYLeft() {
+
+			double theta = -25.0;
+
+			for (int i = 0; i < 5; i++) {
+				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defZPos[i] * Math.sin(theta));
+				defZPos[i] = (int) (defXPos[i] * Math.sin(theta) + defZPos[i] * Math.cos(theta));
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			}
+
+		}
+
+		public void rotateXUp() {
 			
+			double theta = 25.0;
+
+			for (int i = 0; i < 5; i++) {
+				defYPos[i] = (int) (defYPos[i] * Math.cos(theta) - defZPos[i] * Math.sin(theta));
+				defZPos[i] = (int) (defYPos[i] * Math.sin(theta) + defZPos[i] * Math.cos(theta));
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			}
+
+		}
+
+		public void rotateXDown() {
+			
+			double theta = -25.0;
+
+			for (int i = 0; i < 5; i++) {
+				defYPos[i] = (int) (defYPos[i] * Math.cos(theta) - defZPos[i] * Math.sin(theta));
+				defZPos[i] = (int) (defYPos[i] * Math.sin(theta) + defZPos[i] * Math.cos(theta));
+				currXPos[i] = perspective(defXPos[i], defZPos[i]);
+				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			}
+
 		}
 
 		private void doStuff(Graphics g) {
@@ -320,45 +344,78 @@ public class GraphicsProgram extends JFrame {
 		mangle.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				System.out.println(e.getKeyCode());
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_U: //press "u" key on the keyboard to move pyramid up
+				case KeyEvent.VK_U: // press "u" key on the keyboard to move
+									// pyramid up
 					mangle.moveUp();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_D: //press "d" key on the keyboard to move pyramid down 
+				case KeyEvent.VK_D: // press "d" key on the keyboard to move
+									// pyramid down
 					mangle.moveDwn();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_R: //press "r" key on the keyboard to move pyramid right
+				case KeyEvent.VK_R: // press "r" key on the keyboard to move
+									// pyramid right
 					mangle.moveRght();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_L: //press "l" key on keyboard to move pyramid left
+				case KeyEvent.VK_L: // press "l" key on keyboard to move pyramid
+									// left
 					mangle.moveLft();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_UP: //press shift + up arrow to scale the pyramid up in size
-					if (e.isShiftDown()) {
+				case KeyEvent.VK_UP:
+					if (e.isShiftDown()) {// press shift + up arrow to scale the
+						// pyramid up in size
 						mangle.scaleUp();
 						mangle.paintComponent(getGraphics());
-					}
-					break;
-				case KeyEvent.VK_DOWN: //press shift + down arrow to scale the pyramid down in size
-					if (e.isShiftDown()) {
-						mangle.scaleDwn();
+					} else {
+						mangle.rotateXUp(); //rotate UP along x axis
 						mangle.paintComponent(getGraphics());
 					}
 					break;
-				case KeyEvent.VK_PERIOD: //press the ">" key to rotate the pyramid right along the z axis
+				case KeyEvent.VK_DOWN:
+					if (e.isShiftDown()) {// press shift + down arrow to scale the
+						// pyramid down in size
+						mangle.scaleDwn();
+						mangle.paintComponent(getGraphics());
+					} else {
+						mangle.rotateXDown();//rotate DOWN along x axis
+						mangle.paintComponent(getGraphics());
+					}
+					break;
+				case KeyEvent.VK_RIGHT: // press right arrow key to rotate right
+										// around the y axis
+					mangle.rotateYRight();
+					mangle.paintComponent(getGraphics());
+					break;
+				case KeyEvent.VK_LEFT: // press right arrow key to rotate right
+										// around the y axis
+					mangle.rotateYLeft();
+					mangle.paintComponent(getGraphics());
+					break;
+				case KeyEvent.VK_PERIOD: // press the ">" key to rotate the
+											// pyramid right along the z axis
 					mangle.rotateZRight();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_COMMA: //press the "<" key to rortate the pyramid left along the z axis
+				case KeyEvent.VK_COMMA: // press the "<" key to rortate the
+										// pyramid left along the z axis
 					mangle.rotateZLeft();
 					mangle.paintComponent(getGraphics());
 					break;
-				case KeyEvent.VK_ENTER: //press enter to return to the default position
+					
+				case KeyEvent.VK_F:
+					mangle.moveForward();
+					mangle.paintComponent(getGraphics());
+					break;
+				case KeyEvent.VK_B:
+					mangle.moveBackward();
+					mangle.paintComponent(getGraphics());
+					break;
+				case KeyEvent.VK_ENTER: // press enter to return to the default
+										// position
 					mangle.setDefault();
 					mangle.paintComponent(getGraphics());
 					break;
