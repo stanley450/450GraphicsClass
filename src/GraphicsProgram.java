@@ -309,19 +309,12 @@ public class GraphicsProgram extends JFrame {
 
 		}
 
-		private void doStuff(Graphics g) {
-
-			Graphics2D g2d = (Graphics2D) g;
-
-			g2d.drawLine(500, 0, 500, 1000);
-			g2d.drawLine(0, 500, 1000, 500);
-		}
 
 		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 
-			doStuff(g);
+			
 			if (drawTrangle) {
 				drawTrangle(g);
 			}
@@ -337,12 +330,20 @@ public class GraphicsProgram extends JFrame {
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Please Work");
-
 		add(mangle);
+		
+	}
+	
+	private void drawCoordinates() {
 
+		Graphics2D g2d = (Graphics2D) getGraphics();
+
+		g2d.drawLine(500, 0, 500, 1000);
+		g2d.drawLine(0, 500, 1000, 500);
 	}
 
 	public void keyListener() {
+		drawCoordinates();
 		mangle.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
