@@ -35,13 +35,13 @@ public class GraphicsProgram extends JFrame {
 	
 	//function used with the keylistener to choose the current polygon you are using
 	public void currentIndexChecker(boolean bool) {
-		if (bool) {// "w" key press - go through poly list from 0 to end
+		if (bool) {// "page up" key press - go through poly list from 0 to end
 			if (polyList.size() - 2 >= currentIndex) {
 				currentIndex++;
 			} else {
 				currentIndex = 0;
 			}
-		} else {// "e" key press - go through poly list from end to 0
+		} else {// "page down" key press - go through poly list from end to 0
 			if (currentIndex > 0) {
 				currentIndex--;
 			} else {
@@ -50,6 +50,16 @@ public class GraphicsProgram extends JFrame {
 		}
 		System.out.println("current index of poly list: " + currentIndex);
 		System.out.println("size of the poly list: " + polyList.size());
+	}
+	
+	private void deleteLastPoly() {//press delete key to delete the last polygon
+		if(currentIndex == polyList.size() - 1){
+			currentIndex = currentIndex - 1;
+			polyList.remove(polyList.size() - 1);
+		} else {
+			polyList.remove(polyList.size() - 1);
+		}
+		
 	}
 
 	/**
@@ -142,15 +152,18 @@ public class GraphicsProgram extends JFrame {
 
 		public void keyPressed(KeyEvent e) {
 			switch (e.getKeyCode()) {
-			case KeyEvent.VK_Q: //press "q" key to create a new object and select it
+			case KeyEvent.VK_INSERT: //press "insert" key to create a new object and select it
 				polyList.add(new Trangle());
 				currentIndex = polyList.size() - 1;
 				break;
-			case KeyEvent.VK_W: //press "w" key to cycle through objects from the first object and each one after that
+			case KeyEvent.VK_PAGE_UP: //press "page up" key to cycle through objects from the first object and each one after that
 				currentIndexChecker(true);
 				break;
-			case KeyEvent.VK_E: //press "e" key to cycle through objects from the last object and each one after that
+			case KeyEvent.VK_PAGE_DOWN: //press "page down" key to cycle through objects from the last object and each one after that
 				currentIndexChecker(false);
+				break;
+			case KeyEvent.VK_DELETE:
+				deleteLastPoly();
 				break;
 			case KeyEvent.VK_U: // press "u" key on the keyboard to move
 								// pyramid up
@@ -219,6 +232,7 @@ public class GraphicsProgram extends JFrame {
 			}
 			repaint();
 		}
+
 	}
 
 	/**
