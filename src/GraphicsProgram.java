@@ -35,19 +35,21 @@ public class GraphicsProgram extends JFrame {
 	
 	//function used with the keylistener to choose the current polygon you are using
 	public void currentIndexChecker(boolean bool) {
-		if (bool) {
+		if (bool) {// "w" key press - go through poly list from 0 to end
 			if (polyList.size() - 2 >= currentIndex) {
 				currentIndex++;
 			} else {
 				currentIndex = 0;
 			}
-		} else {
-			if (polyList.size() - 2 <= currentIndex) {
+		} else {// "e" key press - go through poly list from end to 0
+			if (currentIndex > 0) {
 				currentIndex--;
 			} else {
 				currentIndex = polyList.size() - 1;
 			}
 		}
+		System.out.println("current index of poly list: " + currentIndex);
+		System.out.println("size of the poly list: " + polyList.size());
 	}
 
 	/**
@@ -370,14 +372,14 @@ public class GraphicsProgram extends JFrame {
 				g2d.setStroke(new BasicStroke(1));
 			}
 
-			System.out.println("Polygon" + i);
-			for (int j = 0; j < 5; j++) {
-				System.out.println("p" + j + " = " + "("
-						+ polyList.get(i).currXPos[j] + ","
-						+ polyList.get(i).currYPos[j] + ")" + " offset p" + j
-						+ " = " + "(" + (polyList.get(i).currXPos[j] + xoff)
-						+ "," + (yoff - polyList.get(i).currYPos[j]) + ")");
-			}
+//			System.out.println("Polygon" + i);
+//			for (int j = 0; j < 5; j++) {
+//				System.out.println("p" + j + " = " + "("
+//						+ polyList.get(i).currXPos[j] + ","
+//						+ polyList.get(i).currYPos[j] + ")" + " offset p" + j
+//						+ " = " + "(" + (polyList.get(i).currXPos[j] + xoff)
+//						+ "," + (yoff - polyList.get(i).currYPos[j]) + ")");
+//			}
 		}
 	}
 
