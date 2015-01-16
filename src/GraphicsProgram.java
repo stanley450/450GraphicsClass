@@ -22,7 +22,7 @@ import javax.swing.JFrame;
 public class GraphicsProgram extends JFrame {
 
 	// Dimensions for the screen
-	final int width = 800;
+	final int width = 1000;
 	final int height = 800;
 
 	// Distance from the eye to the center of the screen
