@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -7,609 +8,594 @@ import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 /**
- * Graphics engine developed for 470 class
+ * Program Assignment for Computer Graphics
+ * 
+ * Graphics engine that creates and messes with objects
  * 
  * @author Landon Stanley
+ *
  */
+@SuppressWarnings("serial")
 public class GraphicsProgram extends JFrame {
 
-	int WIDTH = 800;
-	int HEIGHT = 800;
+	//Dimensions for the screen
+	int width = 800;
+	int height = 800;
 
-	// List of the polygons on the screen
-	Vector<Trangle> polyList = new Vector<Trangle>();
-
-	// initialization of the trangle ids
-	int trangId = 1;
-
-	int currIndex;
+	//Distance from the eye to the center of the screen
+	int eye = 1000;
 
 	/**
-	 * Searches through the polygon list and returns the trangle with the
-	 * current index
+	 * Method taking a point and a zdistance that returns the prospective projection of a point in the program
 	 * 
-	 * @param index
+	 * @param point
+	 * @param zdis
+	 * @return int
 	 */
-	private Trangle getById(int index) {
-		for (int i = 0; i < polyList.size(); i++) {
-			if (polyList.get(i).id == index) {
-				return polyList.get(i);
-			}
-		}
-		return null;
+	public int perspective(double point, double zdis) {
+		return (int) ((eye * point) / (eye + zdis) + 50);
+	}
+	
+	//Vector list of all of the current trangle objects in the program
+	Vector<Trangle> polyList = new Vector<Trangle>();
+	
+	/**
+	 * Constructor for the main graphics engine
+	 */
+	public GraphicsProgram() {
+		setPreferredSize(new Dimension(width, height));
+		setMinimumSize(new Dimension(width, height));
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setTitle("Please Work");
+		addKeyListener(new myKeyListener());
+		setBackground(Color.WHITE);
+		Trangle mangle = new Trangle();
+		polyList.add(mangle);
+		setVisible(true);
+		doStuff(getGraphics());
 	}
 
 	/**
-	 * Draws the polygons on the screen and updates
+	 * Polygon class for graphics program
 	 * 
+	 * @author Landon
+	 *
+	 */
+	class Trangle {
+
+		//x y z positions of the a figure
+		double[] defXPos = new double[5];
+		double[] defYPos = new double[5];
+		double[] defZPos = new double[5];
+
+		//logical midpoint of the polygon
+		double midXPnt;
+		double midYPnt;
+		double midZPnt;
+
+		//actual 2d dimensions of the midpoint
+		int currMidXPnt;
+		int currMidYPnt;
+
+		//actual 2d dimensions of the polygon
+		int[] currXPos = new int[5];
+		int[] currYPos = new int[5];
+
+		/**
+		 * Trangle constructor
+		 */
+		public Trangle() {
+			setDefault(this);
+			setFocusedTrangle(true);
+		}
+
+		/**
+		 * Sets the current Trangle to be focused by the program
+		 * @param boolean bool
+		 */
+		public void setFocusedTrangle(boolean bool) {
+			setFocusable(bool);
+		}
+
+		/**
+		 * returns wether or not the current trangle is focused
+		 * @return boolean
+		 */
+		public boolean getFocusedTrangle() {
+			return isFocusOwner();
+		}
+
+	}
+
+	/**
+	 * KeyListener class for the graphics program that takes the keyboard input
+	 */
+	public class myKeyListener extends KeyAdapter {
+		public void keyPressed(KeyEvent e) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_U: // press "u" key on the keyboard to move
+								// pyramid up
+				moveUp(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_D: // press "d" key on the keyboard to move
+								// pyramid down
+				moveDwn(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_R: // press "r" key on the keyboard to move
+								// pyramid right
+				moveRght(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_L: // press "l" key on keyboard to move pyramid
+								// left
+				moveLft(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_UP:
+				if (e.isShiftDown()) {// press shift + up arrow to scale the
+					// pyramid up in size
+					scaleUp(polyList.get(0));
+					paintComponent(getGraphics());
+				} else {
+					rotateXUp(polyList.get(0)); // rotate UP along x axis
+					paintComponent(getGraphics());
+				}
+				break;
+			case KeyEvent.VK_DOWN:
+				if (e.isShiftDown()) {// press shift + down arrow to scale
+										// the
+					// pyramid down in size
+					scaleDwn(polyList.get(0));
+					paintComponent(getGraphics());
+				} else {
+					rotateXDown(polyList.get(0));// rotate DOWN along x axis
+					paintComponent(getGraphics());
+				}
+				break;
+			case KeyEvent.VK_RIGHT: // press right arrow key to rotate right
+									// around the y axis
+				rotateYRight(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_LEFT: // press right arrow key to rotate right
+									// around the y axis
+				rotateYLeft(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_PERIOD: // press the ">" key to rotate the
+										// pyramid right along the z axis
+				rotateZRight(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_COMMA: // press the "<" key to rortate the
+									// pyramid left along the z axis
+				rotateZLeft(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+
+			case KeyEvent.VK_F:
+				moveForward(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_B:
+				moveBackward(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			case KeyEvent.VK_ENTER: // press enter to return to the default
+									// position
+				setDefault(polyList.get(0));
+				paintComponent(getGraphics());
+				break;
+			}
+			repaint();
+		}
+	}
+	
+	/**
+	 * Method that takes a trangle and sets its value to a default position
+	 * @param Trangle trng
+	 */
+	public void setDefault(Trangle trng) {
+		// 250,100 the top vertex
+		trng.defXPos[0] = 0;
+		trng.defYPos[0] = 150;
+		trng.defZPos[0] = 350;
+		// 100,400 outside bottom left
+		trng.defXPos[1] = -150;
+		trng.defYPos[1] = -150;
+		trng.defZPos[1] = 100;
+		// 400,400 outside bottom right
+		trng.defXPos[2] = 150;
+		trng.defYPos[2] = -150;
+		trng.defZPos[2] = 100;
+		// 175,350 inside bottom left
+		trng.defXPos[3] = -150;
+		trng.defYPos[3] = -150;
+		trng.defZPos[3] = 600;
+		// 325,350 inside bottom right
+		trng.defXPos[4] = 150;
+		trng.defYPos[4] = -150;
+		trng.defZPos[4] = 600;
+
+		System.out.println(perspective(trng.defXPos[0], trng.defZPos[0]));
+
+		for (int i = 0; i < 5; i++) {
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+	}
+
+	/**
+	 * Method that draws all of the possible trangles on the screen
 	 * @param g
 	 */
 	private void drawTrangle(Graphics g) {
 
 		Graphics2D g2d = (Graphics2D) g;
 
-		int offY = HEIGHT / 2;
-		int off = WIDTH / 2;
+		int off = height / 2;
 
 		for (int i = 0; i < polyList.size(); i++) {
 
-			int[] currXPos = new int[5];
-			int[] currYPos = new int[5];
-
-			for (int j = 0; j < 5; j++) {
-				currXPos[j] = (int) polyList.get(i).currXPos[j];
-				currYPos[j] = (int) polyList.get(i).currYPos[j];
+			//finds the currently used trangle and makes its lines wider
+			if (polyList.get(i).getFocusedTrangle()) {
+				g2d.setStroke(new BasicStroke(5));
 			}
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine(currXPos[0] + off, offY - currYPos[0], currXPos[1]
-					+ off, offY - currYPos[1]);
+			g2d.drawLine(polyList.get(i).currXPos[0] + off,
+					off - polyList.get(i).currYPos[0],
+					polyList.get(i).currXPos[1] + off, off
+							- polyList.get(i).currYPos[1]);
 			// top to outside bottom left
-			g2d.drawLine(currXPos[0] + off, offY - currYPos[0], currXPos[2]
-					+ off, offY - currYPos[2]);
+			g2d.drawLine(polyList.get(i).currXPos[0] + off,
+					off - polyList.get(i).currYPos[0],
+					polyList.get(i).currXPos[2] + off, off
+							- polyList.get(i).currYPos[2]);
 			// top to outside bottom right
-			g2d.drawLine(currXPos[0] + off, offY - currYPos[0], currXPos[3]
-					+ off, offY - currYPos[3]);
+			g2d.drawLine(polyList.get(i).currXPos[0] + off,
+					off - polyList.get(i).currYPos[0],
+					polyList.get(i).currXPos[3] + off, off
+							- polyList.get(i).currYPos[3]);
 			// top to inside bottom left
-			g2d.drawLine(currXPos[4] + off, offY - currYPos[4], currXPos[0]
-					+ off, offY - currYPos[0]);
+			g2d.drawLine(polyList.get(i).currXPos[4] + off,
+					off - polyList.get(i).currYPos[4],
+					polyList.get(i).currXPos[0] + off, off
+							- polyList.get(i).currYPos[0]);
 			// inside bottom right to top
 			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine(currXPos[1] + off, offY - currYPos[1], currXPos[2]
-					+ off, offY - currYPos[2]);
+			g2d.drawLine(polyList.get(i).currXPos[1] + off,
+					off - polyList.get(i).currYPos[1],
+					polyList.get(i).currXPos[2] + off, off
+							- polyList.get(i).currYPos[2]);
 			// outside bottom left to outside bottom right
 			g2d.setColor(Color.RED); // back side
-			g2d.drawLine(currXPos[3] + off, offY - currYPos[3], currXPos[4]
-					+ off, offY - currYPos[4]);
+			g2d.drawLine(polyList.get(i).currXPos[3] + off,
+					off - polyList.get(i).currYPos[3],
+					polyList.get(i).currXPos[4] + off, off
+							- polyList.get(i).currYPos[4]);
 			// inside bottom left to inside bottom right
 			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine(currXPos[1] + off, offY - currYPos[1], currXPos[3]
-					+ off, offY - currYPos[3]);
+			g2d.drawLine(polyList.get(i).currXPos[1] + off,
+					off - polyList.get(i).currYPos[1],
+					polyList.get(i).currXPos[3] + off, off
+							- polyList.get(i).currYPos[3]);
 			// outside bottom left to inside bottom left
 			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine(currXPos[4] + off, offY - currYPos[4], currXPos[2]
-					+ off, offY - currYPos[2]);
+			g2d.drawLine(polyList.get(i).currXPos[4] + off,
+					off - polyList.get(i).currYPos[4],
+					polyList.get(i).currXPos[2] + off, off
+							- polyList.get(i).currYPos[2]);
 			// inside bottom right to outside bottom right
 			g2d.setColor(Color.BLACK);
 
-		}
-
-	}
-
-	/**
-	 * Trangle class which is the actual polygon class that is drawn
-	 * 
-	 * @author Landon
-	 */
-	class Trangle extends JPanel {
-
-		int id;
-
-		private double[] defXPos = new double[5];
-		private double[] defYPos = new double[5];
-		private double[] defZPos = new double[5];
-
-		private double[] currXPos = new double[5];
-		private double[] currYPos = new double[5];
-
-		private double eye = 1000;
-
-		private Boolean drawTrangle = true;
-
-		public double perspective(double point, double zdis) {
-			return (eye * point) / (eye + zdis) + 50;
-		}
-
-		/**
-		 * Constructor for Trangle class, gives the polygon an ID, gives it
-		 * basic values and sets it to focusable
-		 */
-		public Trangle() {
-
-			id = trangId;
-			trangId = trangId + 1;
-			setDefault();
-			setFocusable(true);
-		}
-
-		/**
-		 * Sets the current trangle to focusable
-		 */
-		public void setFocus() {
-			setFocusable(true);
-		}
-
-		/**
-		 * Sets the default values of the pyramid on creation or pressing the
-		 * Reset/Enter key
-		 */
-		public void setDefault() {
-			// 250,100 the top vertex
-			defXPos[0] = 0;
-			defYPos[0] = 150;
-			defZPos[0] = 350;
-			// 100,400 outside bottom left
-			defXPos[1] = -150;
-			defYPos[1] = -150;
-			defZPos[1] = 100;
-			// 400,400 outside bottom right
-			defXPos[2] = 150;
-			defYPos[2] = -150;
-			defZPos[2] = 100;
-			// 175,350 inside bottom left
-			defXPos[3] = -150;
-			defYPos[3] = -150;
-			defZPos[3] = 600;
-			// 325,350 inside bottom right
-			defXPos[4] = 150;
-			defYPos[4] = -150;
-			defZPos[4] = 600;
-
-			System.out.println(perspective(defXPos[0], defZPos[0]));
-
-			for (int i = 0; i < 5; i++) {
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
+			if (polyList.get(i).getFocusedTrangle()) {
+				g2d.setStroke(new BasicStroke(1));
 			}
 
-		}
-
-		/**
-		 * Translates the polygon into the positive Y direction
-		 */
-		public void moveUp() {
-			Boolean actionBool = false;
-			for (int i = 0; i < 5; i++) {
-				if (!(currYPos[i] <= -550)) {
-					actionBool = true;
-				} else {
-					actionBool = false;
-					break;
-				}
-			}
-
-			if (actionBool == true) {
-				for (int i = 0; i < 5; i++) {
-					defYPos[i] = defYPos[i] - 10;
-					currYPos[i] = perspective(defYPos[i], defZPos[i]);
-				}
-			}
-		}
-
-		/**
-		 * Translates the polygon into the negative Y direction
-		 */
-		public void moveDwn() {
-			Boolean actionBool = false;
-			for (int i = 0; i < 5; i++) {
-				if (!(currYPos[i] >= 550)) {
-					actionBool = true;
-				} else {
-					actionBool = false;
-					break;
-				}
-			}
-
-			if (actionBool == true) {
-				for (int i = 0; i < 5; i++) {
-					defYPos[i] = defYPos[i] + 10;
-					currYPos[i] = perspective(defYPos[i], defZPos[i]);
-				}
-			}
-		}
-
-		/**
-		 * Translates the polygon into the positive X direction
-		 */
-		public void moveRght() {
-			Boolean actionBool = false;
-			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 550)) {
-					actionBool = true;
-				} else {
-					actionBool = false;
-					break;
-				}
-			}
-
-			if (actionBool == true) {
-				for (int i = 0; i < 5; i++) {
-					defXPos[i] = defXPos[i] + 10;
-					currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				}
-			}
-		}
-
-		/**
-		 * Translates the polygon into the negative X direction
-		 */
-		public void moveLft() {
-			Boolean actionBool = false;
-			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] <= -550)) {
-					actionBool = true;
-				} else {
-					actionBool = false;
-					break;
-				}
-			}
-
-			if (actionBool == true) {
-				for (int i = 0; i < 5; i++) {
-					defXPos[i] = defXPos[i] - 10;
-					currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				}
-			}
-		}
-
-		/**
-		 * Increases the size of the polygon by moving the points away from a
-		 * center point
-		 */
-		public void scaleUp() {
-			Boolean actionBool = false;
-			for (int i = 0; i < 5; i++) {
-				if (!(currXPos[i] >= 550 || currYPos[i] >= 550
-						|| currYPos[i] <= -550 || currXPos[i] <= -550)) {
-					actionBool = true;
-				} else {
-					actionBool = false;
-					break;
-				}
-			}
-
-			if (actionBool == true) {
-				for (int i = 0; i < 5; i++) {
-					defXPos[i] = (int) (defXPos[i] * 1.05);
-					defYPos[i] = (int) (defYPos[i] * 1.05);
-					currXPos[i] = perspective(defXPos[i], defZPos[i]);
-					currYPos[i] = perspective(defYPos[i], defZPos[i]);
-				}
-			}
-		}
-
-		/**
-		 * Decreases the size of the polygon by moving the points towards a
-		 * center point
-		 */
-		public void scaleDwn() {
-			for (int i = 0; i < 5; i++) {
-				defXPos[i] = (int) (defXPos[i] * .95);
-				defYPos[i] = (int) (defYPos[i] * .95);
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-		}
-
-		/**
-		 * Translates the polgyon by moving in the positive Z direction
-		 */
-		public void moveForward() {
-			for (int i = 0; i < 5; i++) {
-				defZPos[i] = defZPos[i] - 100;
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-			}
-		}
-
-		/**
-		 * Translates the polygon by moving in the negative direction
-		 */
-		public void moveBackward() {
-			for (int i = 0; i < 5; i++) {
-				defZPos[i] = defZPos[i] + 100;
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-			}
-		}
-
-		/**
-		 * Rotate clockwise along the Z axis
-		 */
-		public void rotateZRight() {
-			double theta = -25.0;
-
-			for (int i = 0; i < 5; i++) {
-				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defYPos[i]
-						* Math.sin(theta));
-				defYPos[i] = (int) (defXPos[i] * Math.sin(theta) + defYPos[i]
-						* Math.cos(theta));
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-
-		}
-
-		/**
-		 * Rotate counter-clockwise along the Z axis
-		 */
-		public void rotateZLeft() {
-
-			double theta = 25.0;
-
-			for (int i = 0; i < 5; i++) {
-				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defYPos[i]
-						* Math.sin(theta));
-				defYPos[i] = (int) (defXPos[i] * Math.sin(theta) + defYPos[i]
-						* Math.cos(theta));
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-
-		}
-
-		/**
-		 * Rotate right along the Y axis
-		 */
-		public void rotateYRight() {
-
-			double theta = 25.0;
-
-			for (int i = 0; i < 5; i++) {
-				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defZPos[i]
-						* Math.sin(theta));
-				defZPos[i] = (int) (defXPos[i] * Math.sin(theta) + defZPos[i]
-						* Math.cos(theta));
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-
-		}
-
-		/**
-		 * Rotate left along the Y axis
-		 */
-		public void rotateYLeft() {
-
-			double theta = -25.0;
-
-			for (int i = 0; i < 5; i++) {
-				defXPos[i] = (int) (defXPos[i] * Math.cos(theta) - defZPos[i]
-						* Math.sin(theta));
-				defZPos[i] = (int) (defXPos[i] * Math.sin(theta) + defZPos[i]
-						* Math.cos(theta));
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-
-		}
-
-		/**
-		 * Rotate clockwise along the X axis
-		 */
-		public void rotateXUp() {
-
-			double theta = 25.0;
-
-			for (int i = 0; i < 5; i++) {
-				defYPos[i] = (int) (defYPos[i] * Math.cos(theta) - defZPos[i]
-						* Math.sin(theta));
-				defZPos[i] = (int) (defYPos[i] * Math.sin(theta) + defZPos[i]
-						* Math.cos(theta));
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-
-		}
-
-		/**
-		 * Rotate counter-clockwise along the X axis
-		 */
-		public void rotateXDown() {
-
-			double theta = -25.0;
-
-			for (int i = 0; i < 5; i++) {
-				defYPos[i] = (int) (defYPos[i] * Math.cos(theta) - defZPos[i]
-						* Math.sin(theta));
-				defZPos[i] = (int) (defYPos[i] * Math.sin(theta) + defZPos[i]
-						* Math.cos(theta));
-				currXPos[i] = perspective(defXPos[i], defZPos[i]);
-				currYPos[i] = perspective(defYPos[i], defZPos[i]);
-			}
-
-		}
-
-		/**
-		 * Overrides the paintComponent function to draw all of the screen
-		 * 
-		 * @param Graphics
-		 *            g
-		 */
-		@Override
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-
-			if (drawTrangle) {
-				drawTrangle(g);
+			for (int j = 0; j < 5; j++) {
+				System.out.println("p" + j + " = " + "("
+						+ polyList.get(i).currXPos[j] + ","
+						+ polyList.get(i).currYPos[j] + ")");
 			}
 		}
 	}
 
 	/**
-	 * Constructor for the graphics engine, sets the default size
+	 * Method that moves all of the Y points of the selected polygon in the positive y position
+	 * @param Trangle trng
 	 */
-	public GraphicsProgram() {
+	public void moveUp(Trangle trng) {
+		Boolean actionBool = false;
+		for (int i = 0; i < 5; i++) {
+			if (!(trng.currYPos[i] <= -550)) {
+				actionBool = true;
+			} else {
+				actionBool = false;
+				break;
+			}
+		}
 
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		setMinimumSize(new Dimension(WIDTH, HEIGHT));
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setBackground(Color.WHITE);
-		setTitle("Please Work");
-		Trangle mangle = new Trangle();
-		polyList.add(mangle);
-		Trangle one = new Trangle();
-		Trangle two = new Trangle();
-		Trangle three = new Trangle();
-		Trangle four = new Trangle();
-		polyList.add(one);
-		polyList.add(two);
-		polyList.add(three);
-		polyList.add(four);
+		if (actionBool == true) {
+			for (int i = 0; i < 5; i++) {
+				trng.defYPos[i] = trng.defYPos[i] - 10;
+				trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+			}
+		}
+	}
+
+	/**
+	 * Method that move all of the Y points of the selected polygon in the negative y position
+	 * @param Trangle trng
+	 */
+	public void moveDwn(Trangle trng) {
+		Boolean actionBool = false;
+		for (int i = 0; i < 5; i++) {
+			if (!(trng.currYPos[i] >= 550)) {
+				actionBool = true;
+			} else {
+				actionBool = false;
+				break;
+			}
+		}
+
+		if (actionBool == true) {
+			for (int i = 0; i < 5; i++) {
+				trng.defYPos[i] = trng.defYPos[i] + 10;
+				trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+			}
+		}
+	}
+
+	/**
+	 * Method that moves all of the x points of the selected polygon in the positive x position
+	 * @param Trangle trng
+	 */
+	public void moveRght(Trangle trng) {
+		Boolean actionBool = false;
+		for (int i = 0; i < 5; i++) {
+			if (!(trng.currXPos[i] >= 550)) {
+				actionBool = true;
+			} else {
+				actionBool = false;
+				break;
+			}
+		}
+
+		if (actionBool == true) {
+			for (int i = 0; i < 5; i++) {
+				trng.defXPos[i] = trng.defXPos[i] + 10;
+				trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			}
+		}
+	}
+
+	/**
+	 * Method that moves all of the x points of the selected polygon in the negative x positon
+	 * @param Trangle trng
+	 */
+	public void moveLft(Trangle trng) {
+		Boolean actionBool = false;
+		for (int i = 0; i < 5; i++) {
+			if (!(trng.currXPos[i] <= -550)) {
+				actionBool = true;
+			} else {
+				actionBool = false;
+				break;
+			}
+		}
+
+		if (actionBool == true) {
+			for (int i = 0; i < 5; i++) {
+				trng.defXPos[i] = trng.defXPos[i] - 10;
+				trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			}
+		}
+	}
+
+	/**
+	 * Method that increases the size of selected polygon by increasing the distance of all the points from one another
+	 * @param Trangle trng
+	 */
+	public void scaleUp(Trangle trng) {
+		Boolean actionBool = false;
+		for (int i = 0; i < 5; i++) {
+			if (!(trng.currXPos[i] >= 550 || trng.currYPos[i] >= 550
+					|| trng.currYPos[i] <= -550 || trng.currXPos[i] <= -550)) {
+				actionBool = true;
+			} else {
+				actionBool = false;
+				break;
+			}
+		}
+
+		if (actionBool == true) {
+			for (int i = 0; i < 5; i++) {
+				trng.defXPos[i] = (trng.defXPos[i] * 1.05);
+				trng.defYPos[i] = (trng.defYPos[i] * 1.05);
+				trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+				trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+			}
+		}
+	}
+
+	/**
+	 * Method that decreases the size of a polygon by decreasing the distance of all the points from one another
+	 * @param Trangle trng
+	 */
+	public void scaleDwn(Trangle trng) {
+		for (int i = 0; i < 5; i++) {
+			trng.defXPos[i] = (trng.defXPos[i] * .95);
+			trng.defYPos[i] = (trng.defYPos[i] * .95);
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+	}
+
+	/**
+	 * Method that moves all of the z points of the selected polygon into the positive z direction (right hand rule)
+	 * @param Trangle trng
+	 */
+	public void moveForward(Trangle trng) {
+		for (int i = 0; i < 5; i++) {
+			trng.defZPos[i] = trng.defZPos[i] - 100;
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+		}
+	}
+
+	/**
+	 * Method that moves all of the z points of the selected polygon into the negative z direction (right hand rule)
+	 * @param Trangle trng
+	 */
+	public void moveBackward(Trangle trng) {
+		for (int i = 0; i < 5; i++) {
+			trng.defZPos[i] = trng.defZPos[i] + 100;
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+		}
+	}
+
+	/**
+	 * Method that rotates the selected polygon around the z axis clockwise
+	 * @param Trangle trng
+	 */
+	public void rotateZRight(Trangle trng) { // clockwise
+		double theta = -25.0;
+
+		for (int i = 0; i < 5; i++) {
+			trng.defXPos[i] = (trng.defXPos[i] * Math.cos(theta) - trng.defYPos[i]
+					* Math.sin(theta));
+			trng.defYPos[i] = (trng.defXPos[i] * Math.sin(theta) + trng.defYPos[i]
+					* Math.cos(theta));
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
 
 	}
 
 	/**
-	 * Draws the X and Y line on the screen
+	 * Method that rotates the selected polygon around the z axis counter-clockwise
+	 * @param Trangle trng
 	 */
-	private void drawCoordinates() {
+	public void rotateZLeft(Trangle trng) { // counter clockwise
 
-		Graphics2D g2d = (Graphics2D) getGraphics();
+		double theta = 25.0;
 
-		g2d.drawLine(this.HEIGHT / 2, 0, this.HEIGHT / 2, this.WIDTH);
-		g2d.drawLine(0, this.WIDTH / 2, this.HEIGHT, this.WIDTH / 2);
+		for (int i = 0; i < 5; i++) {
+			trng.defXPos[i] = (trng.defXPos[i] * Math.cos(theta) - trng.defYPos[i]
+					* Math.sin(theta));
+			trng.defYPos[i] = (trng.defXPos[i] * Math.sin(theta) + trng.defYPos[i]
+					* Math.cos(theta));
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+
 	}
 
-	public void keyListener() {
-		this.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_0:
-					currIndex = 0;
-					break;
-				case KeyEvent.VK_1:
-					currIndex = 1;
-					break;
-				case KeyEvent.VK_2:
-					currIndex = 2;
-					break;
-				case KeyEvent.VK_3:
-					currIndex = 3;
-					break;
-				case KeyEvent.VK_4:
-					currIndex = 4;
-					break;
-				}
-			}
-		});
-		
-		this.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				getById(currIndex).setFocus();
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_U: // press "u" key on the keyboard to move
-									// pyramid up
-					getById(currIndex).moveUp();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_D: // press "d" key on the keyboard to move
-									// pyramid down
-					getById(currIndex).moveDwn();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_R: // press "r" key on the keyboard to move
-									// pyramid right
-					getById(currIndex).moveRght();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_L: // press "l" key on keyboard to move
-									// pyramid
-									// left
-					getById(currIndex).moveLft();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_UP:
-					if (e.isShiftDown()) {// press shift + up arrow to scale
-											// the
-						// pyramid up in size
-						getById(currIndex).scaleUp();
-						getById(currIndex).paintComponent(getGraphics());
-					} else {
-						getById(currIndex).rotateXUp(); // rotate UP along x
-														// axis
-						getById(currIndex).paintComponent(getGraphics());
-					}
-					break;
-				case KeyEvent.VK_DOWN:
-					if (e.isShiftDown()) {// press shift + down arrow to
-											// scale
-											// the
-						// pyramid down in size
-						getById(currIndex).scaleDwn();
-						getById(currIndex).paintComponent(getGraphics());
-					} else {
-						getById(currIndex).rotateXDown();// rotate DOWN
-															// along x axis
-						getById(currIndex).paintComponent(getGraphics());
-					}
-					break;
-				case KeyEvent.VK_RIGHT: // press right arrow key to rotate
-										// right
-										// around the y axis
-					getById(currIndex).rotateYRight();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_LEFT: // press right arrow key to rotate
-										// right
-										// around the y axis
-					getById(currIndex).rotateYLeft();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_PERIOD: // press the ">" key to rotate the
-											// pyramid right along the z
-											// axis
-					getById(currIndex).rotateZRight();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_COMMA: // press the "<" key to rortate the
-										// pyramid left along the z axis
-					getById(currIndex).rotateZLeft();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
+	/**
+	 * Method that rotates the selected polygon around the y axis counter-clockwise
+	 * @param Trangle trng
+	 */
+	public void rotateYRight(Trangle trng) {
 
-				case KeyEvent.VK_F:
-					getById(currIndex).moveForward();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_B:
-					getById(currIndex).moveBackward();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				case KeyEvent.VK_ENTER: // press enter to return to the
-										// default
-										// position
-					getById(currIndex).setDefault();
-					getById(currIndex).paintComponent(getGraphics());
-					break;
-				}
-				getById(currIndex).repaint();
-			}
-		});
+		double theta = 25.0;
+
+		for (int i = 0; i < 5; i++) {
+			trng.defXPos[i] = (trng.defXPos[i] * Math.cos(theta) - trng.defZPos[i]
+					* Math.sin(theta));
+			trng.defZPos[i] = (trng.defXPos[i] * Math.sin(theta) + trng.defZPos[i]
+					* Math.cos(theta));
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+
 	}
 
+	/**
+	 * Method that rotates the selected polygon around the y axis clockwise
+	 * @param Trangle trng
+	 */
+	public void rotateYLeft(Trangle trng) {
+
+		double theta = -25.0;
+
+		for (int i = 0; i < 5; i++) {
+			trng.defXPos[i] = (trng.defXPos[i] * Math.cos(theta) - trng.defZPos[i]
+					* Math.sin(theta));
+			trng.defZPos[i] = (trng.defXPos[i] * Math.sin(theta) + trng.defZPos[i]
+					* Math.cos(theta));
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+
+	}
+
+	/**
+	 * Method that rotates the selected polygon around the x axis clockwise 
+	 * @param Trangle trng
+	 */
+	public void rotateXUp(Trangle trng) {
+
+		double theta = 25.0;
+
+		for (int i = 0; i < 5; i++) {
+			trng.defYPos[i] = (trng.defYPos[i] * Math.cos(theta) - trng.defZPos[i]
+					* Math.sin(theta));
+			trng.defZPos[i] = (trng.defYPos[i] * Math.sin(theta) + trng.defZPos[i]
+					* Math.cos(theta));
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+
+	}
+
+	/**
+	 * Method that rotates the selected polygon around the x axis counter-clockwise
+	 * @param Trangle trng
+	 */
+	public void rotateXDown(Trangle trng) {
+
+		double theta = -25.0;
+
+		for (int i = 0; i < 5; i++) {
+			trng.defYPos[i] = (trng.defYPos[i] * Math.cos(theta) - trng.defZPos[i]
+					* Math.sin(theta));
+			trng.defZPos[i] = (trng.defYPos[i] * Math.sin(theta) + trng.defZPos[i]
+					* Math.cos(theta));
+			trng.currXPos[i] = perspective(trng.defXPos[i], trng.defZPos[i]);
+			trng.currYPos[i] = perspective(trng.defYPos[i], trng.defZPos[i]);
+		}
+
+	}
+
+	/**
+	 * Method that draws the lines on the page
+	 * @param g
+	 */
+	private void doStuff(Graphics g) {
+
+		Graphics2D g2d = (Graphics2D) g;
+
+		g2d.drawLine(width / 2, 0, width / 2, height);
+		g2d.drawLine(0, height / 2, width, height / 2);
+	}
+
+	/**
+	 * Method that does the main drawing of the components on the screen
+	 * @param g
+	 */
+	public void paintComponent(Graphics g) {
+		drawTrangle(g);
+	}
+
+	/**
+	 * Main method of the program
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				GraphicsProgram lines = new GraphicsProgram();
-				lines.keyListener();
-				lines.setVisible(true);
-				lines.drawCoordinates();
-			}
-		});
+				new GraphicsProgram();
 	}
 }
