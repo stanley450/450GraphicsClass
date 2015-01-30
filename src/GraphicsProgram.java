@@ -31,6 +31,8 @@ public class GraphicsProgram extends JFrame {
 	Image frameImage;
 
 	private boolean backface = false;
+	private int polyfillindex = 0;
+	private boolean zbuffertoggle = false;
 
 	int currentIndex = 0;
 
@@ -112,6 +114,11 @@ public class GraphicsProgram extends JFrame {
 
 		// plane offset "D" normal of the thing and a point on poly
 		double[] normOffset = new double[5];
+		
+		double yMax = defYPos[0];
+		double yMin = defYPos[0];
+		double dx;
+		double xnext;
 
 		// logical midpoint of the polygon
 		double midXPnt;
@@ -197,6 +204,16 @@ public class GraphicsProgram extends JFrame {
 				break;
 			case KeyEvent.VK_C: // Back face culling stuff goes here
 				backface = !backface;
+				break;
+			case KeyEvent.VK_X:
+				if(polyfillindex > 3){
+					polyfillindex = 0;
+				} else { 
+					polyfillindex++;
+				}
+				break;
+			case KeyEvent.VK_Z:
+				zbuffertoggle = !zbuffertoggle;
 				break;
 			case KeyEvent.VK_R: // press "r" key on the keyboard to move
 								// pyramid right
@@ -294,6 +311,11 @@ public class GraphicsProgram extends JFrame {
 
 	}
 
+	
+	public void calcPolystuff(Trangle trng){
+		
+	}
+	
 	public void calcSurfaceNormals(Trangle trng) {
 
 		// Triangle 1 normals
@@ -422,6 +444,7 @@ public class GraphicsProgram extends JFrame {
 	}
 
 	public void calcMidPoints(Trangle trng) {
+		
 		double minX, maxX;
 		double minY, maxY;
 		double minZ, maxZ;
@@ -453,6 +476,18 @@ public class GraphicsProgram extends JFrame {
 		trng.midZPnt = (minZ + maxZ) / 2;
 	}
 
+	public void calcYmaxmin(Trangle trng){
+		
+		for(int i = 0; i < 5; i++){
+			if(trng.defYPos[i] > trng.yMax){
+				trng.yMax = trng.defYPos[i];
+			}
+			if(trng.defYPos[i] < trng.yMin){
+				trng.yMin = trng.defYPos[i];
+			}
+		}
+	}
+	
 	/**
 	 * Method that draws all of the possible trangles on the screen
 	 * 
@@ -538,6 +573,14 @@ public class GraphicsProgram extends JFrame {
 				g2d.setStroke(new BasicStroke(1));
 			}
 		}
+	}
+	
+	public void drawTriangleWithPolyFill(Graphics g){
+		
+	}
+	
+	public void drawTriangleWithZBuffer(Graphics g){
+		
 	}
 
 	// guess
@@ -1012,8 +1055,10 @@ public class GraphicsProgram extends JFrame {
 		doStuff(g);
 		if (backface) {
 			drawTrangleWithBackFaceCulling(g);
-			// } else if(polygonfill 1 2 or 3) {
-			// } else if(zbuffer) {
+		} else if(polyfillindex != 0) {
+			drawTriangleWithPolyFill(g);
+		} else if(zbuffertoggle) {
+			drawTriangleWithZBuffer(g);
 		} else {
 			drawTrangle(g);
 		}
