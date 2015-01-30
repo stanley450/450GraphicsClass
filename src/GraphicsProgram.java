@@ -6,9 +6,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 
 /**
  * Program Assignment for Computer Graphics
@@ -32,8 +37,10 @@ public class GraphicsProgram extends JFrame {
 
 	private boolean backface = false;
 	private int polyfillindex = 0;
+	private boolean polyfilledges = false;
+	private boolean polyfillnoedges = false;
 	private boolean zbuffertoggle = false;
-
+	
 	int currentIndex = 0;
 
 	// function used with the keylistener to choose the current polygon you are
@@ -114,11 +121,6 @@ public class GraphicsProgram extends JFrame {
 
 		// plane offset "D" normal of the thing and a point on poly
 		double[] normOffset = new double[5];
-		
-		double yMax = defYPos[0];
-		double yMin = defYPos[0];
-		double dx;
-		double xnext;
 
 		// logical midpoint of the polygon
 		double midXPnt;
@@ -135,6 +137,26 @@ public class GraphicsProgram extends JFrame {
 		double[] currXPos = new double[5];
 		double[] currYPos = new double[5];
 
+		class Edge {
+
+			double x1, x2;
+			double y1, y2;
+
+			boolean edgebool = false;
+
+			double ymax;
+			double xformax;
+			double ymin;
+			double xformin;
+			double x;
+			double dx;
+
+		}
+		
+		Vector<Edge> globaledge = new Vector<Edge>();
+
+		Edge[] edgelist = new Edge[8];
+
 		/**
 		 * Trangle constructor
 		 */
@@ -148,6 +170,82 @@ public class GraphicsProgram extends JFrame {
 			// Triangle 3 - p0, p3, p4
 			// Triangle 4 - p0, p4, p2
 			// SquareBase - p1, p3, p4, p2
+		}
+
+		public void updateEdges() {
+			
+			globaledge.clear();
+			
+			edgelist[0].y1 = currYPos[0];
+			edgelist[0].x1 = currXPos[0];
+			edgelist[0].y2 = currYPos[1];
+			edgelist[0].x2 = currXPos[1];
+			
+			edgelist[1].y1 = currYPos[1];
+			edgelist[1].x1 = currXPos[1];
+			edgelist[1].y2 = currYPos[2];
+			edgelist[1].x2 = currXPos[2];
+			
+			edgelist[2].y1 = currYPos[2];
+			edgelist[2].x1 = currXPos[2];
+			edgelist[2].y2 = currYPos[0];
+			edgelist[2].x2 = currXPos[0];
+			
+			edgelist[3].y1 = currYPos[1];
+			edgelist[3].x1 = currXPos[1];
+			edgelist[3].y2 = currYPos[3];
+			edgelist[3].x2 = currXPos[3];
+			
+			edgelist[4].y1 = currYPos[3];
+			edgelist[4].x1 = currXPos[3];
+			edgelist[4].y2 = currYPos[0];
+			edgelist[4].x2 = currXPos[0];
+			
+			edgelist[5].y1 = currYPos[3];
+			edgelist[5].x1 = currXPos[3];
+			edgelist[5].y2 = currYPos[4];
+			edgelist[5].x2 = currXPos[4];
+			
+			edgelist[6].y1 = currYPos[4];
+			edgelist[6].x1 = currXPos[4];
+			edgelist[6].y2 = currYPos[0];
+			edgelist[6].x2 = currXPos[0];
+			
+			edgelist[7].y1 = currYPos[4];
+			edgelist[7].x1 = currXPos[4];
+			edgelist[7].y2 = currYPos[2];
+			edgelist[7].x2 = currXPos[2];
+			
+			for(int i = 0; i < edgelist.length; i++){
+				if(edgelist[i].y1 > edgelist[i].y2){
+					edgelist[i].ymax = edgelist[i].y1;
+					edgelist[i].xformax = edgelist[i].x1;
+					edgelist[i].ymin = edgelist[i].y2;
+					edgelist[i].xformin = edgelist[i].x2;
+				} else {
+					edgelist[i].ymax = edgelist[i].y2;
+					edgelist[i].xformax = edgelist[i].x2;
+					edgelist[i].ymin = edgelist[i].y1;
+					edgelist[i].xformin = edgelist[i].x1;
+				}
+				
+				edgelist[i].dx = -((edgelist[i].xformax - edgelist[i].xformin) / (edgelist[i].ymax - edgelist[i].ymin));
+				edgelist[i].x = edgelist[i].xformax + (edgelist[i].dx / 2);
+			}
+			
+			fillGlobal();
+		}
+		
+		
+		public void fillGlobal(){
+			for(int i = 0; i < 8; i++){
+				if(edgelist[i].dx != 0){
+					globaledge.add(edgelist[i]);
+				}
+			}
+			
+			 Comparator comparator = Collections.reverseOrder();
+			 Collections.sort(globaledge, comparator);
 		}
 
 		/**
@@ -169,6 +267,9 @@ public class GraphicsProgram extends JFrame {
 		}
 	}
 
+	public void closeonescape(){
+		this.dispose();
+	}
 	/**
 	 * KeyListener class for the graphics program that takes the keyboard input
 	 */
@@ -176,6 +277,8 @@ public class GraphicsProgram extends JFrame {
 
 		public void keyPressed(KeyEvent e) {
 			switch (e.getKeyCode()) {
+			case KeyEvent.VK_ESCAPE:
+				closeonescape();
 			case KeyEvent.VK_INSERT: // press "insert" key to create a new
 										// object and select it
 				polyList.add(new Trangle());
@@ -194,29 +297,38 @@ public class GraphicsProgram extends JFrame {
 			case KeyEvent.VK_DELETE:
 				deleteLastPoly();
 				break;
-			case KeyEvent.VK_U: // press "u" key on the keyboard to move
-								// pyramid up
+			case KeyEvent.VK_U: // press "u" key on the keyboard to move pyramid
+								// up
 				moveUp(polyList.get(currentIndex));
 				break;
-			case KeyEvent.VK_D: // press "d" key on the keyboard to move
-								// pyramid down
+			case KeyEvent.VK_D: // press "d" key on the keyboard to move pyramid
+								// down
 				moveDwn(polyList.get(currentIndex));
 				break;
 			case KeyEvent.VK_C: // Back face culling stuff goes here
 				backface = !backface;
 				break;
 			case KeyEvent.VK_X:
-				if(polyfillindex > 3){
+				if (polyfillindex > 1) {
 					polyfillindex = 0;
-				} else { 
+				} else {
 					polyfillindex++;
 				}
+				if (polyfillindex == 1) {
+					polyfilledges = true;
+				} else if (polyfillindex == 2) {
+					polyfillnoedges = true;
+				} else {
+					polyfilledges = false;
+					polyfillnoedges = false;
+				}
+				System.out.println("polyfillindex = " + polyfillindex);
 				break;
 			case KeyEvent.VK_Z:
 				zbuffertoggle = !zbuffertoggle;
 				break;
-			case KeyEvent.VK_R: // press "r" key on the keyboard to move
-								// pyramid right
+			case KeyEvent.VK_R: // press "r" key on the keyboard to move pyramid
+								// right
 				moveRght(polyList.get(currentIndex));
 				break;
 			case KeyEvent.VK_L: // press "l" key on keyboard to move pyramid
@@ -225,23 +337,20 @@ public class GraphicsProgram extends JFrame {
 				break;
 			case KeyEvent.VK_UP:
 				if (e.isShiftDown()) {// press shift + up arrow to scale the
-					// pyramid up in size
+										// pyramid up in size
 					scaleUp(polyList.get(currentIndex));
 				} else {
 					rotateX(polyList.get(currentIndex), true); // rotate UP
-																// along x
-																// axis
+																// along x axis
 				}
 				break;
 			case KeyEvent.VK_DOWN:
-				if (e.isShiftDown()) {// press shift + down arrow to scale
-										// the
-					// pyramid down in size
+				if (e.isShiftDown()) {// press shift + down arrow to scale the
+										// pyramid down in size
 					scaleDwn(polyList.get(currentIndex));
 				} else {
 					rotateX(polyList.get(currentIndex), false);// rotate DOWN
-																// along
-																// x axis
+																// along x axis
 				}
 				break;
 			case KeyEvent.VK_RIGHT: // press right arrow key to rotate right
@@ -252,19 +361,20 @@ public class GraphicsProgram extends JFrame {
 									// around the y axis
 				rotateY(polyList.get(currentIndex), false);
 				break;
-			case KeyEvent.VK_PERIOD: // press the ">" key to rotate the
-										// pyramid right along the z axis
+			case KeyEvent.VK_PERIOD: // press the ">" key to rotate the pyramid
+										// right along the z axis
 				rotateZ(polyList.get(currentIndex), false);
 				break;
-			case KeyEvent.VK_COMMA: // press the "<" key to rortate the
-									// pyramid left along the z axis
+			case KeyEvent.VK_COMMA: // press the "<" key to rotate the pyramid
+									// left along the z axis
 				rotateZ(polyList.get(currentIndex), true);
 				break;
-
-			case KeyEvent.VK_F:
+			case KeyEvent.VK_F: // press the "f" key to move the pyramid in the
+								// positive z direction
 				moveForward(polyList.get(currentIndex));
 				break;
-			case KeyEvent.VK_B:
+			case KeyEvent.VK_B:// press the "b" key to move the pyramid in the
+								// negative z direction
 				moveBackward(polyList.get(currentIndex));
 				break;
 			case KeyEvent.VK_ENTER: // press enter to return to the default
@@ -311,43 +421,39 @@ public class GraphicsProgram extends JFrame {
 
 	}
 
-	
-	public void calcPolystuff(Trangle trng){
-		
-	}
-	
 	public void calcSurfaceNormals(Trangle trng) {
 
 		// Triangle 1 normals
-		//vector 1 
+		// vector 1
 		double vect1x = trng.defXPos[1] - trng.defXPos[0];
 		double vect1y = trng.defYPos[1] - trng.defYPos[0];
 		double vect1z = trng.defZPos[1] - trng.defZPos[0];
-		
-		//vector 2
+
+		// vector 2
 		double vect2x = trng.defXPos[2] - trng.defXPos[0];
 		double vect2y = trng.defYPos[2] - trng.defYPos[0];
 		double vect2z = trng.defZPos[2] - trng.defZPos[0];
 
-		//normal vector from the two vectors of the triangle
+		// normal vector from the two vectors of the triangle
 		trng.normX[0] = (vect1y * vect2z) - (vect1z * vect2y);
 		trng.normY[0] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[0] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		//"plane offset"  D  used in calc
-		trng.normOffset[0] = (trng.defXPos[0] * trng.normX[0]) - (trng.defYPos[0] * trng.normY[0]) + (trng.defZPos[0] * trng.normZ[0]);
+		// "plane offset" D used in calc
+		trng.normOffset[0] = (trng.defXPos[0] * trng.normX[0]) - (trng.defYPos[0] * trng.normY[0]) 
+				+ (trng.defZPos[0] * trng.normZ[0]);
 
-		//final equation to compute visibility
+		// final equation to compute visibility
 		double plsbeover = (0 * trng.normX[0]) - (0 * trng.normY[0]) + (-eye * trng.normZ[0]) - trng.normOffset[0];
-		
-		//set visible
-		if (plsbeover <= 0) {
+
+		// set visible
+		if (plsbeover < 0) {
 			trng.isVisible[0] = true;
 		} else {
 			trng.isVisible[0] = false;
 		}
-		
-		//rinse, repeat
+
+		// rinse, repeat
 
 		// Triangle 2 normals
 		vect1x = trng.defXPos[3] - trng.defXPos[0];
@@ -362,11 +468,14 @@ public class GraphicsProgram extends JFrame {
 		trng.normY[1] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[1] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[1] = (trng.defXPos[3] * trng.normX[1]) - (trng.defYPos[3] * trng.normY[1]) + (trng.defZPos[3] * trng.normZ[1]);
-		
-		plsbeover = (0 * trng.normX[1]) - (0 * trng.normY[1]) + (-eye * trng.normZ[1]) - trng.normOffset[1];
-		
-		if (plsbeover <= 0) {
+		trng.normOffset[1] = (trng.defXPos[3] * trng.normX[1])
+				- (trng.defYPos[3] * trng.normY[1])
+				+ (trng.defZPos[3] * trng.normZ[1]);
+
+		plsbeover = (0 * trng.normX[1]) - (0 * trng.normY[1])
+				+ (-eye * trng.normZ[1]) - trng.normOffset[1];
+
+		if (plsbeover < 0) {
 			trng.isVisible[1] = true;
 		} else {
 			trng.isVisible[1] = false;
@@ -385,11 +494,14 @@ public class GraphicsProgram extends JFrame {
 		trng.normY[2] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[2] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[2] = (trng.defXPos[4] * trng.normX[2]) - (trng.defYPos[4] * trng.normY[2]) + (trng.defZPos[4] * trng.normZ[2]);
-		
-		plsbeover = (0 * trng.normX[2]) - (0 * trng.normY[2]) + (-eye * trng.normZ[2]) - trng.normOffset[2];
-		
-		if (plsbeover <= 0) {
+		trng.normOffset[2] = (trng.defXPos[4] * trng.normX[2])
+				- (trng.defYPos[4] * trng.normY[2])
+				+ (trng.defZPos[4] * trng.normZ[2]);
+
+		plsbeover = (0 * trng.normX[2]) - (0 * trng.normY[2])
+				+ (-eye * trng.normZ[2]) - trng.normOffset[2];
+
+		if (plsbeover < 0) {
 			trng.isVisible[2] = true;
 		} else {
 			trng.isVisible[2] = false;
@@ -408,17 +520,20 @@ public class GraphicsProgram extends JFrame {
 		trng.normY[3] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[3] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[3] = (trng.defXPos[2] * trng.normX[3]) - (trng.defYPos[2] * trng.normY[3]) + (trng.defZPos[2] * trng.normZ[3]);
-		
-		plsbeover = (0 * trng.normX[3]) - (0 * trng.normY[3]) + (-eye * trng.normZ[3]) - trng.normOffset[3];
-		
-		if (plsbeover <= 0) {
+		trng.normOffset[3] = (trng.defXPos[2] * trng.normX[3])
+				- (trng.defYPos[2] * trng.normY[3])
+				+ (trng.defZPos[2] * trng.normZ[3]);
+
+		plsbeover = (0 * trng.normX[3]) - (0 * trng.normY[3])
+				+ (-eye * trng.normZ[3]) - trng.normOffset[3];
+
+		if (plsbeover < 0) {
 			trng.isVisible[3] = true;
 		} else {
 			trng.isVisible[3] = false;
 		}
 
-		// Triangle Base normals
+		// square Base normals
 		vect1x = trng.defXPos[4] - trng.defXPos[1];
 		vect1y = trng.defYPos[4] - trng.defYPos[1];
 		vect1z = trng.defZPos[4] - trng.defZPos[1];
@@ -427,16 +542,17 @@ public class GraphicsProgram extends JFrame {
 		vect2y = trng.defYPos[2] - trng.defYPos[1];
 		vect2z = trng.defZPos[2] - trng.defZPos[1];
 
-		
 		trng.normX[4] = (vect1y * vect2z) - (vect1z * vect2y);
 		trng.normY[4] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[4] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[4] = (trng.defXPos[2] * trng.normX[4]) - (trng.defYPos[2] * trng.normY[4]) + (trng.defZPos[2] * trng.normZ[4]);
-		
+		trng.normOffset[4] = (trng.defXPos[2] * trng.normX[4])
+				- (trng.defYPos[2] * trng.normY[4])
+				+ (trng.defZPos[2] * trng.normZ[4]);
+
 		plsbeover = (0 * trng.normX[4]) - (0 * trng.normY[4]) + (-eye * trng.normZ[4]) - trng.normOffset[4];
-		
-		if (plsbeover <= 0) {
+
+		if (plsbeover < 0) {
 			trng.isVisible[4] = true;
 		} else {
 			trng.isVisible[4] = false;
@@ -444,7 +560,7 @@ public class GraphicsProgram extends JFrame {
 	}
 
 	public void calcMidPoints(Trangle trng) {
-		
+
 		double minX, maxX;
 		double minY, maxY;
 		double minZ, maxZ;
@@ -476,24 +592,16 @@ public class GraphicsProgram extends JFrame {
 		trng.midZPnt = (minZ + maxZ) / 2;
 	}
 
-	public void calcYmaxmin(Trangle trng){
+	public void fillTrangle(Trangle trng) {
 		
-		for(int i = 0; i < 5; i++){
-			if(trng.defYPos[i] > trng.yMax){
-				trng.yMax = trng.defYPos[i];
-			}
-			if(trng.defYPos[i] < trng.yMin){
-				trng.yMin = trng.defYPos[i];
-			}
-		}
 	}
-	
+
 	/**
 	 * Method that draws all of the possible trangles on the screen
 	 * 
 	 * @param g
 	 */
-	private void drawTrangle(Graphics g) {
+	public void drawTrangle(Graphics g) {
 
 		Graphics2D g2d = (Graphics2D) g;
 
@@ -542,6 +650,10 @@ public class GraphicsProgram extends JFrame {
 					(int) (yoff - polyList.get(i).currYPos[4]),
 					(int) (polyList.get(i).currXPos[0] + xoff),
 					(int) (yoff - polyList.get(i).currYPos[0]));
+			if (polyfilledges) {
+				fillTrangle(polyList.get(i));
+
+			}
 			// inside bottom right to top
 			g2d.setColor(Color.GREEN); // front side
 			g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
@@ -574,13 +686,13 @@ public class GraphicsProgram extends JFrame {
 			}
 		}
 	}
-	
-	public void drawTriangleWithPolyFill(Graphics g){
-		
+
+	public void drawTriangleWithPolyFill(Graphics g) {
+
 	}
-	
-	public void drawTriangleWithZBuffer(Graphics g){
-		
+
+	public void drawTriangleWithZBuffer(Graphics g) {
+
 	}
 
 	// guess
@@ -616,7 +728,7 @@ public class GraphicsProgram extends JFrame {
 			}
 
 			g2d.setColor(Color.BLACK);
-			
+
 			if (polyList.get(i).isVisible[0] == true) {
 				// p0 to p1
 				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
@@ -1055,9 +1167,7 @@ public class GraphicsProgram extends JFrame {
 		doStuff(g);
 		if (backface) {
 			drawTrangleWithBackFaceCulling(g);
-		} else if(polyfillindex != 0) {
-			drawTriangleWithPolyFill(g);
-		} else if(zbuffertoggle) {
+		} else if (zbuffertoggle) {
 			drawTriangleWithZBuffer(g);
 		} else {
 			drawTrangle(g);
