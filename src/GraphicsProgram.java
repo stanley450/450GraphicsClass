@@ -295,32 +295,37 @@ public class GraphicsProgram extends JFrame {
 	}
 
 	public void calcSurfaceNormals(Trangle trng) {
-		// hardcodesohard
 
 		// Triangle 1 normals
+		//vector 1 
 		double vect1x = trng.defXPos[1] - trng.defXPos[0];
 		double vect1y = trng.defYPos[1] - trng.defYPos[0];
 		double vect1z = trng.defZPos[1] - trng.defZPos[0];
-
+		
+		//vector 2
 		double vect2x = trng.defXPos[2] - trng.defXPos[0];
 		double vect2y = trng.defYPos[2] - trng.defYPos[0];
 		double vect2z = trng.defZPos[2] - trng.defZPos[0];
 
+		//normal vector from the two vectors of the triangle
 		trng.normX[0] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[0] = (vect1z * vect2x) - (vect1x * vect2z);
+		trng.normY[0] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[0] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[0] = trng.defXPos[0] * trng.normX[0] - trng.defYPos[0]
-				* trng.normY[0] + trng.defZPos[0] * trng.normZ[0];
+		//"plane offset"  D  used in calc
+		trng.normOffset[0] = (trng.defXPos[0] * trng.normX[0]) - (trng.defYPos[0] * trng.normY[0]) + (trng.defZPos[0] * trng.normZ[0]);
 
-		double plsbeover = trng.midXPnt
-				* trng.normX[0] - trng.midYPnt * trng.normY[0] + trng.midZPnt
-				* trng.normZ[0] - trng.normOffset[0];
-		if (plsbeover > 0) {
+		//final equation to compute visibility
+		double plsbeover = (0 * trng.normX[0]) - (0 * trng.normY[0]) + (-eye * trng.normZ[0]) - trng.normOffset[0];
+		
+		//set visible
+		if (plsbeover <= 0) {
 			trng.isVisible[0] = true;
 		} else {
 			trng.isVisible[0] = false;
 		}
+		
+		//rinse, repeat
 
 		// Triangle 2 normals
 		vect1x = trng.defXPos[3] - trng.defXPos[0];
@@ -332,83 +337,84 @@ public class GraphicsProgram extends JFrame {
 		vect2z = trng.defZPos[1] - trng.defZPos[0];
 
 		trng.normX[1] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[1] = (vect1z * vect2x) - (vect1x * vect2z);
+		trng.normY[1] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[1] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[1] = trng.defXPos[3] * trng.normX[1] - trng.defYPos[3]
-				* trng.normY[1] + trng.defZPos[3] * trng.normZ[1];
-		plsbeover = trng.midXPnt * trng.normX[1] - trng.midYPnt * trng.normY[1] + trng.midZPnt * trng.normZ[1]
-				- trng.normOffset[1];
-		if (plsbeover > 0) {
+		trng.normOffset[1] = (trng.defXPos[3] * trng.normX[1]) - (trng.defYPos[3] * trng.normY[1]) + (trng.defZPos[3] * trng.normZ[1]);
+		
+		plsbeover = (0 * trng.normX[1]) - (0 * trng.normY[1]) + (-eye * trng.normZ[1]) - trng.normOffset[1];
+		
+		if (plsbeover <= 0) {
 			trng.isVisible[1] = true;
 		} else {
 			trng.isVisible[1] = false;
 		}
 
 		// Triangle 3 normals
-		vect1x = trng.defXPos[3] - trng.defXPos[0];
-		vect1y = trng.defYPos[3] - trng.defYPos[0];
-		vect1z = trng.defZPos[3] - trng.defZPos[0];
+		vect1x = trng.defXPos[4] - trng.defXPos[0];
+		vect1y = trng.defYPos[4] - trng.defYPos[0];
+		vect1z = trng.defZPos[4] - trng.defZPos[0];
 
-		vect2x = trng.defXPos[4] - trng.defXPos[0];
-		vect2y = trng.defYPos[4] - trng.defYPos[0];
-		vect2z = trng.defZPos[4] - trng.defZPos[0];
+		vect2x = trng.defXPos[3] - trng.defXPos[0];
+		vect2y = trng.defYPos[3] - trng.defYPos[0];
+		vect2z = trng.defZPos[3] - trng.defZPos[0];
 
 		trng.normX[2] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[2] = (vect1z * vect2x) - (vect1x * vect2z);
+		trng.normY[2] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[2] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[2] = trng.defXPos[4] * trng.normX[2] - trng.defYPos[4]
-				* trng.normY[2] + trng.defZPos[4] * trng.normZ[2];
-		plsbeover = trng.midXPnt * trng.normX[2] - trng.midYPnt * trng.normY[2] + trng.midZPnt * trng.normZ[2]
-				- trng.normOffset[2];
-		if (plsbeover > 0) {
+		trng.normOffset[2] = (trng.defXPos[4] * trng.normX[2]) - (trng.defYPos[4] * trng.normY[2]) + (trng.defZPos[4] * trng.normZ[2]);
+		
+		plsbeover = (0 * trng.normX[2]) - (0 * trng.normY[2]) + (-eye * trng.normZ[2]) - trng.normOffset[2];
+		
+		if (plsbeover <= 0) {
 			trng.isVisible[2] = true;
 		} else {
 			trng.isVisible[2] = false;
 		}
 
 		// Triangle 4 normals
-		vect1x = trng.defXPos[4] - trng.defXPos[0];
-		vect1y = trng.defYPos[4] - trng.defYPos[0];
-		vect1z = trng.defZPos[4] - trng.defZPos[0];
+		vect1x = trng.defXPos[2] - trng.defXPos[0];
+		vect1y = trng.defYPos[2] - trng.defYPos[0];
+		vect1z = trng.defZPos[2] - trng.defZPos[0];
 
-		vect2x = trng.defXPos[2] - trng.defXPos[0];
-		vect2y = trng.defYPos[2] - trng.defYPos[0];
-		vect2z = trng.defZPos[2] - trng.defZPos[0];
+		vect2x = trng.defXPos[4] - trng.defXPos[0];
+		vect2y = trng.defYPos[4] - trng.defYPos[0];
+		vect2z = trng.defZPos[4] - trng.defZPos[0];
 
 		trng.normX[3] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[3] = (vect1z * vect2x) - (vect1x * vect2z);
+		trng.normY[3] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[3] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[3] = trng.defXPos[2] * trng.normX[3] - trng.defYPos[2]
-				* trng.normY[3] + trng.defZPos[2] * trng.normZ[3];
-		plsbeover = trng.midXPnt * trng.normX[3] - trng.midYPnt * trng.normY[3] + trng.midZPnt * trng.normZ[3]
-				- trng.normOffset[3];
-		if (plsbeover > 0) {
+		trng.normOffset[3] = (trng.defXPos[2] * trng.normX[3]) - (trng.defYPos[2] * trng.normY[3]) + (trng.defZPos[2] * trng.normZ[3]);
+		
+		plsbeover = (0 * trng.normX[3]) - (0 * trng.normY[3]) + (-eye * trng.normZ[3]) - trng.normOffset[3];
+		
+		if (plsbeover <= 0) {
 			trng.isVisible[3] = true;
 		} else {
 			trng.isVisible[3] = false;
 		}
 
 		// Triangle Base normals
-		vect1x = trng.defXPos[2] - trng.defXPos[1];
-		vect1y = trng.defYPos[2] - trng.defYPos[1];
-		vect1z = trng.defZPos[2] - trng.defZPos[1];
+		vect1x = trng.defXPos[4] - trng.defXPos[1];
+		vect1y = trng.defYPos[4] - trng.defYPos[1];
+		vect1z = trng.defZPos[4] - trng.defZPos[1];
 
-		vect2x = trng.defXPos[3] - trng.defXPos[1];
-		vect2y = trng.defYPos[3] - trng.defYPos[1];
-		vect2z = trng.defZPos[3] - trng.defZPos[1];
+		vect2x = trng.defXPos[2] - trng.defXPos[1];
+		vect2y = trng.defYPos[2] - trng.defYPos[1];
+		vect2z = trng.defZPos[2] - trng.defZPos[1];
 
+		
 		trng.normX[4] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[4] = (vect1z * vect2x) - (vect1x * vect2z);
+		trng.normY[4] = -(vect1z * vect2x) - (vect1x * vect2z);
 		trng.normZ[4] = (vect1x * vect2y) - (vect1y * vect2x);
 
-		trng.normOffset[4] = trng.defXPos[2] * trng.normX[4] - trng.defYPos[2]
-				* trng.normY[4] + trng.defZPos[2] * trng.normZ[4];
-		plsbeover = trng.midXPnt * trng.normX[4] - trng.midYPnt * trng.normY[4] + trng.midZPnt * trng.normZ[4]
-				- trng.normOffset[4];
-		if (plsbeover > 0) {
+		trng.normOffset[4] = (trng.defXPos[2] * trng.normX[4]) - (trng.defYPos[2] * trng.normY[4]) + (trng.defZPos[2] * trng.normZ[4]);
+		
+		plsbeover = (0 * trng.normX[4]) - (0 * trng.normY[4]) + (-eye * trng.normZ[4]) - trng.normOffset[4];
+		
+		if (plsbeover <= 0) {
 			trng.isVisible[4] = true;
 		} else {
 			trng.isVisible[4] = false;
@@ -536,7 +542,7 @@ public class GraphicsProgram extends JFrame {
 
 	// guess
 	public void drawTrangleWithBackFaceCulling(Graphics g) {
-		
+
 		Graphics2D g2d = (Graphics2D) g;
 
 		int xoff = width / 2;
@@ -551,7 +557,7 @@ public class GraphicsProgram extends JFrame {
 		}
 
 		for (int i = 0; i < polyList.size(); i++) {
-			
+
 			calcSurfaceNormals(polyList.get(i));
 
 			// finds the currently used trangle and makes its lines wider
@@ -567,8 +573,9 @@ public class GraphicsProgram extends JFrame {
 			}
 
 			g2d.setColor(Color.BLACK);
-			// p0 to p1
+			
 			if (polyList.get(i).isVisible[0] == true) {
+				// p0 to p1
 				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
 						(int) (yoff - polyList.get(i).currYPos[0]),
 						(int) (polyList.get(i).currXPos[1] + xoff),
@@ -646,8 +653,8 @@ public class GraphicsProgram extends JFrame {
 						(int) (yoff - polyList.get(i).currYPos[2]));
 				g2d.setColor(Color.BLACK);
 			}
-			
-			if(polyList.get(i).isVisible[4] == true){
+
+			if (polyList.get(i).isVisible[4] == true) {
 				g2d.setColor(Color.BLUE); // right side
 				// p4 to p2
 				g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
