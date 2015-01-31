@@ -14,7 +14,6 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-
 /**
  * Program Assignment for Computer Graphics
  * 
@@ -31,7 +30,7 @@ public class GraphicsProgram extends JFrame {
 	final int height = 800;
 
 	// Distance from the eye to the center of the screen
-	int eye = 1000;
+	private int eye = 1000;
 
 	Image frameImage;
 
@@ -40,12 +39,88 @@ public class GraphicsProgram extends JFrame {
 	private boolean polyfilledges = false;
 	private boolean polyfillnoedges = false;
 	private boolean zbuffertoggle = false;
-	
-	int currentIndex = 0;
+
+	private int currentIndex = 0;
+
+	public class Point2d {
+		double x, y;
+
+		Point2d(double xpoint, double ypoint) {
+			this.x = xpoint;
+			this.y = ypoint;
+		}
+	}
+
+	public Point2d subtractPoints2d(Point2d pointA, Point2d pointB) {
+		Point2d temp = new Point2d(0, 0);
+
+		temp.x = pointA.x - pointB.x;
+		temp.y = pointA.y - pointB.y;
+
+		return temp;
+	}
+
+	public Point2d addPoints2d(Point2d pointA, Point2d pointB) {
+		Point2d temp = new Point2d(0, 0);
+
+		temp.x = pointA.x + pointB.x;
+		temp.y = pointA.y + pointB.y;
+
+		return temp;
+	}
+
+	public Point2d multiPoints2d(Point2d point, double scale) {
+		Point2d temp = new Point2d(0, 0);
+
+		temp.x = point.x * scale;
+		temp.y = point.y * scale;
+
+		return temp;
+	}
+
+	public class Point3d {
+		double x, y, z;
+
+		Point3d(double xpoint, double ypoint, double zpoint) {
+			this.x = xpoint;
+			this.y = ypoint;
+			this.z = zpoint;
+		}
+	}
+
+	public Point3d subtractPoints(Point3d pointA, Point3d pointB) {
+		Point3d temp = new Point3d(0, 0, 0);
+
+		temp.x = pointA.x - pointB.x;
+		temp.y = pointA.y - pointB.y;
+		temp.z = pointA.z - pointB.z;
+
+		return temp;
+	}
+
+	public Point3d addPoints(Point3d pointA, Point3d pointB) {
+		Point3d temp = new Point3d(0, 0, 0);
+
+		temp.x = pointA.x + pointB.x;
+		temp.y = pointA.y + pointB.y;
+		temp.z = pointA.z + pointB.z;
+
+		return temp;
+	}
+
+	public Point3d multiPoints(Point3d point, double scale) {
+		Point3d temp = new Point3d(0, 0, 0);
+
+		temp.x = point.x * scale;
+		temp.y = point.y * scale;
+		temp.z = point.z * scale;
+
+		return temp;
+	}
 
 	// function used with the keylistener to choose the current polygon you are
 	// using
-	public void currentIndexChecker(boolean bool) {
+	private void currentIndexChecker(boolean bool) {
 		if (bool) {// "page up" key press - go through poly list from 0 to end
 			if (polyList.size() - 2 >= currentIndex) {
 				currentIndex++;
@@ -80,12 +155,12 @@ public class GraphicsProgram extends JFrame {
 	 * @param zdis
 	 * @return int
 	 */
-	public double perspective(double point, double zdis) {
+	private double perspective(double point, double zdis) {
 		return ((eye * point) / (eye + zdis));
 	}
 
-	// Vector list of all of the current trangle objects in the program
-	Vector<Trangle> polyList = new Vector<Trangle>();
+	// Vector list of all of the current Polygon objects in the program
+	Vector<Polygon> polyList = new Vector<Polygon>();
 
 	/**
 	 * Constructor for the main graphics engine
@@ -97,179 +172,169 @@ public class GraphicsProgram extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Please Work");
 		addKeyListener(new myKeyListener());
-		Trangle mangle = new Trangle();
+		Polygon mangle = new Polygon();
 		polyList.add(mangle);
 		setVisible(true);
+	}
+
+	public class Triangle2D {
+
+		Point2d p0, p1, p2;
+
+		Triangle2D(Triangle3D trng) {
+			this.p0 = new Point2d(perspective(trng.p0.x, trng.p0.z), perspective(trng.p0.y, trng.p0.z));
+			this.p1 = new Point2d(perspective(trng.p1.x, trng.p1.z), perspective(trng.p1.y, trng.p1.z));
+			this.p2 = new Point2d(perspective(trng.p2.x, trng.p2.z), perspective(trng.p2.y, trng.p2.z));
+		}
+	}
+
+	public class Triangle3D {
+
+		Point3d p0, p1, p2;
+
+		Triangle3D(Point3d point1, Point3d point2, Point3d point3) {
+			this.p0 = point1;
+			this.p1 = point2;
+			this.p2 = point3;
+		}
+
+		Edge edge1 = new Edge(p0, p1);
+		Edge edge2 = new Edge(p1, p2);
+		Edge edge3 = new Edge(p2, p1);
+
+	}
+	
+	public class Edge {
+		
+		Point3d p1, p2;
+
+		Edge(Point3d pointA, Point3d pointB) {
+
+			this.p1 = pointA;
+			this.p2 = pointB;
+
+//			if (p1.y > p2.y) {
+//				ymax = p1.y;
+//				xformax = p1.x;
+//				ymin = p2.y;
+//				xformin = p2.x;
+//			} else {
+//				ymax = p2.y;
+//				xformax = p2.x;
+//				ymin = p1.y;
+//				xformin = p1.x;
+//			}
+//
+//			dx = -((xformax - xformin) / (ymax - ymin));
+//			x = xformax + (dx / 2);
+
+		}
+
+		boolean edgebool = false;
+
+		double ymax;
+		double xformax;
+		double ymin;
+		double xformin;
+		double x;
+		double dx;
+
+	}
+
+	public void drawTriangle(Graphics g, Triangle2D trng, int xoff, int yoff) {
+		Graphics2D g2d = (Graphics2D) g;
+
+		g2d.drawLine((int) (trng.p0.x + xoff), (int) (yoff - trng.p0.y),
+				(int) (trng.p1.x + xoff), (int) (yoff - trng.p1.y));
+		g2d.drawLine((int) (trng.p1.x + xoff), (int) (yoff - trng.p1.y),
+				(int) (trng.p2.x + xoff), (int) (yoff - trng.p2.y));
+		g2d.drawLine((int) (trng.p0.x + xoff), (int) (yoff - trng.p0.y),
+				(int) (trng.p2.x + xoff), (int) (yoff - trng.p2.y));
 	}
 
 	/**
 	 * Polygon class for graphics program
 	 */
-	class Trangle {
+	class Polygon {
 
 		// x y z positions of the a figure
-		double[] defXPos = new double[5];
-		double[] defYPos = new double[5];
-		double[] defZPos = new double[5];
+		Point3d[] polyPosition = new Point3d[5];
 
 		// normals for the current triangle and each face
-		double[] normX = new double[5];
-		double[] normY = new double[5];
-		double[] normZ = new double[5];
+		Point3d[] normalPoints = new Point3d[6];
 
-		boolean[] isVisible = new boolean[5];
+		boolean[] isVisible = new boolean[6];
 
 		// plane offset "D" normal of the thing and a point on poly
-		double[] normOffset = new double[5];
+		double[] normOffset = new double[6];
 
 		// logical midpoint of the polygon
-		double midXPnt;
-		double midYPnt;
-		double midZPnt;
+		Point3d polyMidPoint;
 
 		// actual 2d dimensions of the midpoint
-		double currMidXPnt;
-		double currMidYPnt;
+		Point2d perspectivePolygonMidpoint;
 
 		boolean isFocused = false;
 
+		Triangle3D[] triangleList = new Triangle3D[6];
+
 		// actual 2d dimensions of the polygon
-		double[] currXPos = new double[5];
-		double[] currYPos = new double[5];
-
-		class Edge {
-
-			double x1, x2;
-			double y1, y2;
-
-			boolean edgebool = false;
-
-			double ymax;
-			double xformax;
-			double ymin;
-			double xformin;
-			double x;
-			double dx;
-
-		}
-		
-		Vector<Edge> globaledge = new Vector<Edge>();
-
-		Edge[] edgelist = new Edge[8];
+		Point2d[] perspectivePolygonPoints = new Point2d[5];
 
 		/**
-		 * Trangle constructor
+		 * Polygon constructor
 		 */
-		public Trangle() {
+		public Polygon() {
 			setDefault(this);
-			setFocusedTrangle(true);
+			setFocusedPolygon(true);
+			setTriangles();
+		}
 
+		public void setTriangles() {
 			// Different polys for the figure are
 			// Triangle 1 - p0, p1, p2
+			triangleList[0] = new Triangle3D(polyPosition[0], polyPosition[1],
+					polyPosition[2]);
 			// Triangle 2 - p0, p3, p1
+			triangleList[1] = new Triangle3D(polyPosition[0], polyPosition[3],
+					polyPosition[1]);
 			// Triangle 3 - p0, p3, p4
+			triangleList[2] = new Triangle3D(polyPosition[0], polyPosition[4],
+					polyPosition[3]);
 			// Triangle 4 - p0, p4, p2
-			// SquareBase - p1, p3, p4, p2
-		}
-
-		public void updateEdges() {
-			
-			globaledge.clear();
-			
-			edgelist[0].y1 = currYPos[0];
-			edgelist[0].x1 = currXPos[0];
-			edgelist[0].y2 = currYPos[1];
-			edgelist[0].x2 = currXPos[1];
-			
-			edgelist[1].y1 = currYPos[1];
-			edgelist[1].x1 = currXPos[1];
-			edgelist[1].y2 = currYPos[2];
-			edgelist[1].x2 = currXPos[2];
-			
-			edgelist[2].y1 = currYPos[2];
-			edgelist[2].x1 = currXPos[2];
-			edgelist[2].y2 = currYPos[0];
-			edgelist[2].x2 = currXPos[0];
-			
-			edgelist[3].y1 = currYPos[1];
-			edgelist[3].x1 = currXPos[1];
-			edgelist[3].y2 = currYPos[3];
-			edgelist[3].x2 = currXPos[3];
-			
-			edgelist[4].y1 = currYPos[3];
-			edgelist[4].x1 = currXPos[3];
-			edgelist[4].y2 = currYPos[0];
-			edgelist[4].x2 = currXPos[0];
-			
-			edgelist[5].y1 = currYPos[3];
-			edgelist[5].x1 = currXPos[3];
-			edgelist[5].y2 = currYPos[4];
-			edgelist[5].x2 = currXPos[4];
-			
-			edgelist[6].y1 = currYPos[4];
-			edgelist[6].x1 = currXPos[4];
-			edgelist[6].y2 = currYPos[0];
-			edgelist[6].x2 = currXPos[0];
-			
-			edgelist[7].y1 = currYPos[4];
-			edgelist[7].x1 = currXPos[4];
-			edgelist[7].y2 = currYPos[2];
-			edgelist[7].x2 = currXPos[2];
-			
-			for(int i = 0; i < edgelist.length; i++){
-				if(edgelist[i].y1 > edgelist[i].y2){
-					edgelist[i].ymax = edgelist[i].y1;
-					edgelist[i].xformax = edgelist[i].x1;
-					edgelist[i].ymin = edgelist[i].y2;
-					edgelist[i].xformin = edgelist[i].x2;
-				} else {
-					edgelist[i].ymax = edgelist[i].y2;
-					edgelist[i].xformax = edgelist[i].x2;
-					edgelist[i].ymin = edgelist[i].y1;
-					edgelist[i].xformin = edgelist[i].x1;
-				}
-				
-				edgelist[i].dx = -((edgelist[i].xformax - edgelist[i].xformin) / (edgelist[i].ymax - edgelist[i].ymin));
-				edgelist[i].x = edgelist[i].xformax + (edgelist[i].dx / 2);
-			}
-			
-			fillGlobal();
-		}
-		
-		
-		public void fillGlobal(){
-			for(int i = 0; i < 8; i++){
-				if(edgelist[i].dx != 0){
-					globaledge.add(edgelist[i]);
-				}
-			}
-			
-			 Comparator comparator = Collections.reverseOrder();
-			 Collections.sort(globaledge, comparator);
+			triangleList[3] = new Triangle3D(polyPosition[0], polyPosition[2],
+					polyPosition[4]);
+			// Triangle 5 - p1, p3, p2
+			triangleList[4] = new Triangle3D(polyPosition[1], polyPosition[3],
+					polyPosition[2]);
+			// Triangle 6 - p4, p2, p3
+			triangleList[5] = new Triangle3D(polyPosition[4], polyPosition[2],
+					polyPosition[3]);
 		}
 
 		/**
-		 * Sets the current Trangle to be focused by the program
+		 * Sets the current Polygon to be focused by the program
 		 * 
 		 * @param boolean bool
 		 */
-		public void setFocusedTrangle(boolean bool) {
+		public void setFocusedPolygon(boolean bool) {
 			isFocused = bool;
 		}
 
 		/**
-		 * returns wether or not the current trangle is focused
+		 * returns wether or not the current Polygon is focused
 		 * 
 		 * @return boolean
 		 */
-		public boolean getFocusedTrangle() {
+		public boolean getFocusedPolygon() {
 			return isFocused;
 		}
 	}
 
-	public void closeonescape(){
+	public void closeOnEscape() {
 		this.dispose();
 	}
+
 	/**
 	 * KeyListener class for the graphics program that takes the keyboard input
 	 */
@@ -278,10 +343,10 @@ public class GraphicsProgram extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_ESCAPE:
-				closeonescape();
+				closeOnEscape();
 			case KeyEvent.VK_INSERT: // press "insert" key to create a new
 										// object and select it
-				polyList.add(new Trangle());
+				polyList.add(new Polygon());
 				currentIndex = polyList.size() - 1;
 				break;
 			case KeyEvent.VK_PAGE_UP: // press "page up" key to cycle through
@@ -388,220 +453,244 @@ public class GraphicsProgram extends JFrame {
 	}
 
 	/**
-	 * Method that takes a trangle and sets its value to a default position
+	 * Method that takes a Polygon and sets its value to a default position
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void setDefault(Trangle trng) {
+	public void setDefault(Polygon poly) {
+		System.out.println("set default");
 		// p0
-		trng.defXPos[0] = 0;
-		trng.defYPos[0] = 150;
-		trng.defZPos[0] = 350;
-		// p1
-		trng.defXPos[1] = -150;
-		trng.defYPos[1] = -150;
-		trng.defZPos[1] = 100;
-		// p2
-		trng.defXPos[2] = 150;
-		trng.defYPos[2] = -150;
-		trng.defZPos[2] = 100;
-		// p3
-		trng.defXPos[3] = -150;
-		trng.defYPos[3] = -150;
-		trng.defZPos[3] = 600;
-		// p4
-		trng.defXPos[4] = 150;
-		trng.defYPos[4] = -150;
-		trng.defZPos[4] = 600;
+		poly.polyPosition[0] = new Point3d(0, 150, 200);
 
-		trng.midXPnt = 0;
-		trng.midYPnt = 0;
-		trng.midZPnt = 350;
+		// p1
+		poly.polyPosition[1] = new Point3d(-150, -150, 100);
+
+		// p2
+		poly.polyPosition[2] = new Point3d(150, -150, 100);
+		
+		// p3
+		poly.polyPosition[3] = new Point3d(-150, -150, 300);
+
+		// p4
+		poly.polyPosition[4] = new Point3d(150, -150, 300);
+
+		poly.polyMidPoint = new Point3d(0, 0, 200);
 
 	}
 
-	public void calcSurfaceNormals(Trangle trng) {
+	public void calcSurfaceNormals(Polygon poly) {
 
 		// Triangle 1 normals
 		// vector 1
-		double vect1x = trng.defXPos[1] - trng.defXPos[0];
-		double vect1y = trng.defYPos[1] - trng.defYPos[0];
-		double vect1z = trng.defZPos[1] - trng.defZPos[0];
+		Point3d vect1 = subtractPoints(poly.polyPosition[1],
+				poly.polyPosition[0]);
 
 		// vector 2
-		double vect2x = trng.defXPos[2] - trng.defXPos[0];
-		double vect2y = trng.defYPos[2] - trng.defYPos[0];
-		double vect2z = trng.defZPos[2] - trng.defZPos[0];
+		Point3d vect2 = subtractPoints(poly.polyPosition[2],
+				poly.polyPosition[0]);
 
 		// normal vector from the two vectors of the triangle
-		trng.normX[0] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[0] = -(vect1z * vect2x) - (vect1x * vect2z);
-		trng.normZ[0] = (vect1x * vect2y) - (vect1y * vect2x);
+		poly.normalPoints[0] = new Point3d((vect1.y * vect2.z)
+				- (vect1.z * vect2.y), -(vect1.z * vect2.x)
+				- (vect1.x * vect2.z), (vect1.x * vect2.y)
+				- (vect1.y * vect2.x));
 
 		// "plane offset" D used in calc
-		trng.normOffset[0] = (trng.defXPos[0] * trng.normX[0]) - (trng.defYPos[0] * trng.normY[0]) 
-				+ (trng.defZPos[0] * trng.normZ[0]);
+		poly.normOffset[0] = (poly.polyPosition[0].x * poly.normalPoints[0].x)
+				- (poly.polyPosition[0].y * poly.normalPoints[0].y)
+				+ (poly.polyPosition[0].z * poly.normalPoints[0].z);
 
 		// final equation to compute visibility
-		double plsbeover = (0 * trng.normX[0]) - (0 * trng.normY[0]) + (-eye * trng.normZ[0]) - trng.normOffset[0];
+		double visible = (-eye * poly.normalPoints[0].z) - poly.normOffset[0];
 
 		// set visible
-		if (plsbeover < 0) {
-			trng.isVisible[0] = true;
+		if (visible < 0) {
+			poly.isVisible[0] = true;
 		} else {
-			trng.isVisible[0] = false;
+			poly.isVisible[0] = false;
 		}
 
 		// rinse, repeat
 
 		// Triangle 2 normals
-		vect1x = trng.defXPos[3] - trng.defXPos[0];
-		vect1y = trng.defYPos[3] - trng.defYPos[0];
-		vect1z = trng.defZPos[3] - trng.defZPos[0];
+		// vector 1
+		vect1 = subtractPoints(poly.polyPosition[3], poly.polyPosition[0]);
 
-		vect2x = trng.defXPos[1] - trng.defXPos[0];
-		vect2y = trng.defYPos[1] - trng.defYPos[0];
-		vect2z = trng.defZPos[1] - trng.defZPos[0];
+		// vector 2
+		vect2 = subtractPoints(poly.polyPosition[1], poly.polyPosition[0]);
 
-		trng.normX[1] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[1] = -(vect1z * vect2x) - (vect1x * vect2z);
-		trng.normZ[1] = (vect1x * vect2y) - (vect1y * vect2x);
+		// normal vector from the two vectors of the triangle
+		poly.normalPoints[1] = new Point3d((vect1.y * vect2.z)
+				- (vect1.z * vect2.y), -(vect1.z * vect2.x)
+				- (vect1.x * vect2.z), (vect1.x * vect2.y)
+				- (vect1.y * vect2.x));
 
-		trng.normOffset[1] = (trng.defXPos[3] * trng.normX[1])
-				- (trng.defYPos[3] * trng.normY[1])
-				+ (trng.defZPos[3] * trng.normZ[1]);
+		// "plane offset" D used in calc
+		poly.normOffset[1] = (poly.polyPosition[3].x * poly.normalPoints[1].x)
+				- (poly.polyPosition[3].y * poly.normalPoints[1].y)
+				+ (poly.polyPosition[3].z * poly.normalPoints[1].z);
 
-		plsbeover = (0 * trng.normX[1]) - (0 * trng.normY[1])
-				+ (-eye * trng.normZ[1]) - trng.normOffset[1];
+		// final equation to compute visibility
+		visible = (-eye * poly.normalPoints[1].z) - poly.normOffset[1];
 
-		if (plsbeover < 0) {
-			trng.isVisible[1] = true;
+		// set visible
+		if (visible < 0) {
+			poly.isVisible[1] = true;
 		} else {
-			trng.isVisible[1] = false;
+			poly.isVisible[1] = false;
 		}
 
 		// Triangle 3 normals
-		vect1x = trng.defXPos[4] - trng.defXPos[0];
-		vect1y = trng.defYPos[4] - trng.defYPos[0];
-		vect1z = trng.defZPos[4] - trng.defZPos[0];
+		// vector 1
+		vect1 = subtractPoints(poly.polyPosition[4], poly.polyPosition[0]);
 
-		vect2x = trng.defXPos[3] - trng.defXPos[0];
-		vect2y = trng.defYPos[3] - trng.defYPos[0];
-		vect2z = trng.defZPos[3] - trng.defZPos[0];
+		// vector 2
+		vect2 = subtractPoints(poly.polyPosition[3], poly.polyPosition[0]);
 
-		trng.normX[2] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[2] = -(vect1z * vect2x) - (vect1x * vect2z);
-		trng.normZ[2] = (vect1x * vect2y) - (vect1y * vect2x);
+		// normal vector from the two vectors of the triangle
+		poly.normalPoints[2] = new Point3d((vect1.y * vect2.z)
+				- (vect1.z * vect2.y), -(vect1.z * vect2.x)
+				- (vect1.x * vect2.z), (vect1.x * vect2.y)
+				- (vect1.y * vect2.x));
 
-		trng.normOffset[2] = (trng.defXPos[4] * trng.normX[2])
-				- (trng.defYPos[4] * trng.normY[2])
-				+ (trng.defZPos[4] * trng.normZ[2]);
+		// "plane offset" D used in calc
+		poly.normOffset[2] = (poly.polyPosition[4].x * poly.normalPoints[2].x)
+				- (poly.polyPosition[4].y * poly.normalPoints[2].y)
+				+ (poly.polyPosition[4].z * poly.normalPoints[2].z);
 
-		plsbeover = (0 * trng.normX[2]) - (0 * trng.normY[2])
-				+ (-eye * trng.normZ[2]) - trng.normOffset[2];
+		// final equation to compute visibility
+		visible = (-eye * poly.normalPoints[2].z) - poly.normOffset[2];
 
-		if (plsbeover < 0) {
-			trng.isVisible[2] = true;
+		// set visible
+		if (visible < 0) {
+			poly.isVisible[2] = true;
 		} else {
-			trng.isVisible[2] = false;
+			poly.isVisible[2] = false;
 		}
 
 		// Triangle 4 normals
-		vect1x = trng.defXPos[2] - trng.defXPos[0];
-		vect1y = trng.defYPos[2] - trng.defYPos[0];
-		vect1z = trng.defZPos[2] - trng.defZPos[0];
+		// vector 1
+		vect1 = subtractPoints(poly.polyPosition[2], poly.polyPosition[0]);
 
-		vect2x = trng.defXPos[4] - trng.defXPos[0];
-		vect2y = trng.defYPos[4] - trng.defYPos[0];
-		vect2z = trng.defZPos[4] - trng.defZPos[0];
+		// vector 2
+		vect2 = subtractPoints(poly.polyPosition[4], poly.polyPosition[0]);
 
-		trng.normX[3] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[3] = -(vect1z * vect2x) - (vect1x * vect2z);
-		trng.normZ[3] = (vect1x * vect2y) - (vect1y * vect2x);
+		// normal vector from the two vectors of the triangle
+		poly.normalPoints[3] = new Point3d((vect1.y * vect2.z)
+				- (vect1.z * vect2.y), -(vect1.z * vect2.x)
+				- (vect1.x * vect2.z), (vect1.x * vect2.y)
+				- (vect1.y * vect2.x));
 
-		trng.normOffset[3] = (trng.defXPos[2] * trng.normX[3])
-				- (trng.defYPos[2] * trng.normY[3])
-				+ (trng.defZPos[2] * trng.normZ[3]);
+		// "plane offset" D used in calc
+		poly.normOffset[3] = (poly.polyPosition[2].x * poly.normalPoints[3].x)
+				- (poly.polyPosition[2].y * poly.normalPoints[3].y)
+				+ (poly.polyPosition[2].z * poly.normalPoints[3].z);
 
-		plsbeover = (0 * trng.normX[3]) - (0 * trng.normY[3])
-				+ (-eye * trng.normZ[3]) - trng.normOffset[3];
+		// final equation to compute visibility
+		visible = (-eye * poly.normalPoints[3].z) - poly.normOffset[3];
 
-		if (plsbeover < 0) {
-			trng.isVisible[3] = true;
+		// set visible
+		if (visible < 0) {
+			poly.isVisible[3] = true;
 		} else {
-			trng.isVisible[3] = false;
+			poly.isVisible[3] = false;
 		}
 
-		// square Base normals
-		vect1x = trng.defXPos[4] - trng.defXPos[1];
-		vect1y = trng.defYPos[4] - trng.defYPos[1];
-		vect1z = trng.defZPos[4] - trng.defZPos[1];
+		// Triangle 5 normals
+		// vector 1
+		vect1 = subtractPoints(poly.polyPosition[3], poly.polyPosition[1]);
 
-		vect2x = trng.defXPos[2] - trng.defXPos[1];
-		vect2y = trng.defYPos[2] - trng.defYPos[1];
-		vect2z = trng.defZPos[2] - trng.defZPos[1];
+		// vector 2
+		vect2 = subtractPoints(poly.polyPosition[2], poly.polyPosition[1]);
 
-		trng.normX[4] = (vect1y * vect2z) - (vect1z * vect2y);
-		trng.normY[4] = -(vect1z * vect2x) - (vect1x * vect2z);
-		trng.normZ[4] = (vect1x * vect2y) - (vect1y * vect2x);
+		// normal vector from the two vectors of the triangle
+		poly.normalPoints[4] = new Point3d((vect1.y * vect2.z)
+				- (vect1.z * vect2.y), -(vect1.z * vect2.x)
+				- (vect1.x * vect2.z), (vect1.x * vect2.y)
+				- (vect1.y * vect2.x));
 
-		trng.normOffset[4] = (trng.defXPos[2] * trng.normX[4])
-				- (trng.defYPos[2] * trng.normY[4])
-				+ (trng.defZPos[2] * trng.normZ[4]);
+		// "plane offset" D used in calc
+		poly.normOffset[4] = (poly.polyPosition[3].x * poly.normalPoints[4].x)
+				- (poly.polyPosition[3].y * poly.normalPoints[4].y)
+				+ (poly.polyPosition[3].z * poly.normalPoints[4].z);
 
-		plsbeover = (0 * trng.normX[4]) - (0 * trng.normY[4]) + (-eye * trng.normZ[4]) - trng.normOffset[4];
+		// final equation to compute visibility
+		visible = (-eye * poly.normalPoints[4].z) - poly.normOffset[4];
 
-		if (plsbeover < 0) {
-			trng.isVisible[4] = true;
+		// set visible
+		if (visible < 0) {
+			poly.isVisible[4] = true;
 		} else {
-			trng.isVisible[4] = false;
+			poly.isVisible[4] = false;
 		}
+
+		// Triangle 6 normals
+		// vector 1
+		vect1 = subtractPoints(poly.polyPosition[2], poly.polyPosition[4]);
+
+		// vector 2
+		vect2 = subtractPoints(poly.polyPosition[3], poly.polyPosition[4]);
+
+		// normal vector from the two vectors of the triangle
+		poly.normalPoints[5] = new Point3d((vect1.y * vect2.z)
+				- (vect1.z * vect2.y), -(vect1.z * vect2.x)
+				- (vect1.x * vect2.z), (vect1.x * vect2.y)
+				- (vect1.y * vect2.x));
+
+		// "plane offset" D used in calc
+		poly.normOffset[5] = (poly.polyPosition[3].x * poly.normalPoints[5].x)
+				- (poly.polyPosition[3].y * poly.normalPoints[5].y)
+				+ (poly.polyPosition[3].z * poly.normalPoints[5].z);
+
+		// final equation to compute visibility
+		visible = (-eye * poly.normalPoints[5].z) - poly.normOffset[5];
+
+		// set visible
+		if (visible < 0) {
+			poly.isVisible[5] = true;
+		} else {
+			poly.isVisible[5] = false;
+		}
+
 	}
 
-	public void calcMidPoints(Trangle trng) {
+	public void calcMidPoints(Polygon poly) {
 
-		double minX, maxX;
-		double minY, maxY;
-		double minZ, maxZ;
+		Point3d min, max;
 
-		minX = trng.defXPos[0];
-		maxX = trng.defXPos[0];
-		minY = trng.defYPos[0];
-		maxY = trng.defYPos[0];
-		minZ = trng.defZPos[0];
-		maxZ = trng.defZPos[0];
+		min = poly.polyPosition[0];
+		max = poly.polyPosition[0];
 
 		for (int i = 0; i < 5; i++) {
-			if (minX > trng.defXPos[i])
-				minX = trng.defXPos[i];
-			if (maxX < trng.defXPos[i])
-				maxX = trng.defXPos[i];
-			if (minY > trng.defYPos[i])
-				minY = trng.defYPos[i];
-			if (maxY < trng.defYPos[i])
-				maxY = trng.defYPos[i];
-			if (minZ > trng.defZPos[i])
-				minZ = trng.defZPos[i];
-			if (maxZ < trng.defZPos[i])
-				maxZ = trng.defZPos[i];
+			if (min.x > poly.polyPosition[i].x)
+				min.x = poly.polyPosition[i].x;
+			if (min.y > poly.polyPosition[i].y)
+				min.x = poly.polyPosition[i].y;
+			if (min.z > poly.polyPosition[i].z)
+				min.x = poly.polyPosition[i].z;
+			if (max.x > poly.polyPosition[i].x)
+				max.x = poly.polyPosition[i].x;
+			if (max.y > poly.polyPosition[i].y)
+				max.y = poly.polyPosition[i].y;
+			if (max.z > poly.polyPosition[i].z)
+				max.z = poly.polyPosition[i].z;
 		}
-
-		trng.midXPnt = (minX + maxX) / 2;
-		trng.midYPnt = (minY + maxY) / 2;
-		trng.midZPnt = (minZ + maxZ) / 2;
+		poly.polyMidPoint.x = (min.x + max.x) / 2;
+		poly.polyMidPoint.y = (min.y + max.y) / 2;
+		poly.polyMidPoint.z = (min.z + max.z) / 2;
 	}
 
-	public void fillTrangle(Trangle trng) {
-		
+	public void fillPolygon(Polygon poly) {
+
 	}
 
 	/**
-	 * Method that draws all of the possible trangles on the screen
+	 * Method that draws all of the possible Polygons on the screen
 	 * 
 	 * @param g
 	 */
-	public void drawTrangle(Graphics g) {
+	public void drawPolygon(Graphics g) {
 
 		Graphics2D g2d = (Graphics2D) g;
 
@@ -610,253 +699,258 @@ public class GraphicsProgram extends JFrame {
 
 		for (int p = 0; p < polyList.size(); p++) {
 			if (currentIndex == p) {
-				polyList.get(p).setFocusedTrangle(true);
+				polyList.get(p).setFocusedPolygon(true);
 			} else {
-				polyList.get(p).setFocusedTrangle(false);
+				polyList.get(p).setFocusedPolygon(false);
 			}
 		}
 
 		for (int i = 0; i < polyList.size(); i++) {
 
-			// finds the currently used trangle and makes its lines wider
-			if (polyList.get(i).getFocusedTrangle()) {
+			// finds the currently used Polygon and makes its lines wider
+			if (polyList.get(i).getFocusedPolygon()) {
 				g2d.setStroke(new BasicStroke(5));
 			}
 
-			for (int k = 0; k < 5; k++) {
-				polyList.get(i).currXPos[k] = perspective(
-						polyList.get(i).defXPos[k], polyList.get(i).defZPos[k]);
-				polyList.get(i).currYPos[k] = perspective(
-						polyList.get(i).defYPos[k], polyList.get(i).defZPos[k]);
-			}
+			 for (int k = 0; k < 5; k++) {
+			// polyList.get(i).currXPos[k] = perspective(
+			// polyList.get(i).defXPos[k], polyList.get(i).defZPos[k]);
+			// polyList.get(i).currYPos[k] = perspective(
+			// polyList.get(i).defYPos[k], polyList.get(i).defZPos[k]);
+				 
+				 polyList.get(i).perspectivePolygonPoints[k] = new Point2d(
+						 perspective(polyList.get(i).polyPosition[k].x, polyList.get(i).polyPosition[k].z), 
+						 perspective(polyList.get(i).polyPosition[k].y, polyList.get(i).polyPosition[k].z));
+			 }
+
+			Triangle2D[] templist = new Triangle2D[polyList.get(i).triangleList.length];
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[0]),
-					(int) (polyList.get(i).currXPos[1] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[1]));
-			// top to outside bottom left
-			g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[0]),
-					(int) (polyList.get(i).currXPos[2] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[2]));
-			// top to outside bottom right
-			g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[0]),
-					(int) (polyList.get(i).currXPos[3] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[3]));
-			// top to inside bottom left
-			g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[4]),
-					(int) (polyList.get(i).currXPos[0] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[0]));
-			if (polyfilledges) {
-				fillTrangle(polyList.get(i));
 
+			for (int q = 0; q < polyList.get(i).triangleList.length; q++) {
+				templist[q] = new Triangle2D(polyList.get(i).triangleList[q]);
+				drawTriangle(g, templist[q], xoff, yoff);
 			}
-			// inside bottom right to top
-			g2d.setColor(Color.GREEN); // front side
-			g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[1]),
-					(int) (polyList.get(i).currXPos[2] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[2]));
-			// outside bottom left to outside bottom right
-			g2d.setColor(Color.RED); // back side
-			g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[3]),
-					(int) (polyList.get(i).currXPos[4] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[4]));
-			// inside bottom left to inside bottom right
-			g2d.setColor(Color.YELLOW); // left side
-			g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[1]),
-					(int) (polyList.get(i).currXPos[3] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[3]));
-			// outside bottom left to inside bottom left
-			g2d.setColor(Color.BLUE); // right side
-			g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[4]),
-					(int) (polyList.get(i).currXPos[2] + xoff),
-					(int) (yoff - polyList.get(i).currYPos[2]));
-			// inside bottom right to outside bottom right
-			g2d.setColor(Color.BLACK);
 
-			if (polyList.get(i).getFocusedTrangle()) {
+			// g2d.setColor(Color.BLACK);
+			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[0]),
+			// (int) (polyList.get(i).currXPos[1] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[1]));
+			// // top to outside bottom left
+			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[0]),
+			// (int) (polyList.get(i).currXPos[2] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[2]));
+			// // top to outside bottom right
+			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[0]),
+			// (int) (polyList.get(i).currXPos[3] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[3]));
+			// // top to inside bottom left
+			// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[4]),
+			// (int) (polyList.get(i).currXPos[0] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[0]));
+			// if (polyfilledges) {
+			// fillPolygon(polyList.get(i));
+			//
+			// }
+			// // inside bottom right to top
+			// g2d.setColor(Color.GREEN); // front side
+			// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[1]),
+			// (int) (polyList.get(i).currXPos[2] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[2]));
+			// // outside bottom left to outside bottom right
+			// g2d.setColor(Color.RED); // back side
+			// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[3]),
+			// (int) (polyList.get(i).currXPos[4] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[4]));
+			// // inside bottom left to inside bottom right
+			// g2d.setColor(Color.YELLOW); // left side
+			// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[1]),
+			// (int) (polyList.get(i).currXPos[3] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[3]));
+			// // outside bottom left to inside bottom left
+			// g2d.setColor(Color.BLUE); // right side
+			// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[4]),
+			// (int) (polyList.get(i).currXPos[2] + xoff),
+			// (int) (yoff - polyList.get(i).currYPos[2]));
+			// // inside bottom right to outside bottom right
+			// g2d.setColor(Color.BLACK);
+
+			if (polyList.get(i).getFocusedPolygon()) {
 				g2d.setStroke(new BasicStroke(1));
 			}
 		}
-	}
-
-	public void drawTriangleWithPolyFill(Graphics g) {
-
-	}
-
-	public void drawTriangleWithZBuffer(Graphics g) {
-
 	}
 
 	// guess
-	public void drawTrangleWithBackFaceCulling(Graphics g) {
-
-		Graphics2D g2d = (Graphics2D) g;
-
-		int xoff = width / 2;
-		int yoff = height / 2;
-
-		for (int p = 0; p < polyList.size(); p++) {
-			if (currentIndex == p) {
-				polyList.get(p).setFocusedTrangle(true);
-			} else {
-				polyList.get(p).setFocusedTrangle(false);
-			}
-		}
-
-		for (int i = 0; i < polyList.size(); i++) {
-
-			calcSurfaceNormals(polyList.get(i));
-
-			// finds the currently used trangle and makes its lines wider
-			if (polyList.get(i).getFocusedTrangle()) {
-				g2d.setStroke(new BasicStroke(5));
-			}
-
-			for (int k = 0; k < 5; k++) {
-				polyList.get(i).currXPos[k] = perspective(
-						polyList.get(i).defXPos[k], polyList.get(i).defZPos[k]);
-				polyList.get(i).currYPos[k] = perspective(
-						polyList.get(i).defYPos[k], polyList.get(i).defZPos[k]);
-			}
-
-			g2d.setColor(Color.BLACK);
-
-			if (polyList.get(i).isVisible[0] == true) {
-				// p0 to p1
-				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]),
-						(int) (polyList.get(i).currXPos[1] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[1]));
-				// p0 to p2
-				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]),
-						(int) (polyList.get(i).currXPos[2] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[2]));
-				g2d.setColor(Color.GREEN); // front side
-				// p1 to p2
-				g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[1]),
-						(int) (polyList.get(i).currXPos[2] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[2]));
-				g2d.setColor(Color.BLACK);
-			}
-
-			if (polyList.get(i).isVisible[1] == true) {
-				// p0 to p1
-				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]),
-						(int) (polyList.get(i).currXPos[1] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[1]));
-				// p0 to p3
-				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]),
-						(int) (polyList.get(i).currXPos[3] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[3]));
-				g2d.setColor(Color.YELLOW); // left side
-				// p1 to p3
-				g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[1]),
-						(int) (polyList.get(i).currXPos[3] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[3]));
-				g2d.setColor(Color.BLACK);
-			}
-
-			if (polyList.get(i).isVisible[2] == true) {
-				// p0 to p3
-				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]),
-						(int) (polyList.get(i).currXPos[3] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[3]));
-				// p4 to p0
-				g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[4]),
-						(int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]));
-				g2d.setColor(Color.RED); // back side
-				// p3 to p4
-				g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[3]),
-						(int) (polyList.get(i).currXPos[4] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[4]));
-				g2d.setColor(Color.BLACK);
-			}
-
-			if (polyList.get(i).isVisible[3] == true) {
-				// p4 to p0
-				g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[4]),
-						(int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]));
-				// p0 to p2
-				g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[0]),
-						(int) (polyList.get(i).currXPos[2] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[2]));
-				g2d.setColor(Color.BLUE); // right side
-				// p4 to p2
-				g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[4]),
-						(int) (polyList.get(i).currXPos[2] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[2]));
-				g2d.setColor(Color.BLACK);
-			}
-
-			if (polyList.get(i).isVisible[4] == true) {
-				g2d.setColor(Color.BLUE); // right side
-				// p4 to p2
-				g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[4]),
-						(int) (polyList.get(i).currXPos[2] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[2]));
-				g2d.setColor(Color.RED); // back side
-				// p3 to p4
-				g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[3]),
-						(int) (polyList.get(i).currXPos[4] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[4]));
-				g2d.setColor(Color.YELLOW); // left side
-				// p1 to p3
-				g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[1]),
-						(int) (polyList.get(i).currXPos[3] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[3]));
-				g2d.setColor(Color.GREEN); // front side
-				// p1 to p2
-				g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[1]),
-						(int) (polyList.get(i).currXPos[2] + xoff),
-						(int) (yoff - polyList.get(i).currYPos[2]));
-				g2d.setColor(Color.BLACK);
-			}
-
-			g2d.setColor(Color.BLACK);
-
-			if (polyList.get(i).getFocusedTrangle()) {
-				g2d.setStroke(new BasicStroke(1));
-			}
-		}
-
-	}
+	// public void drawPolygonWithBackFaceCulling(Graphics g) {
+	//
+	// Graphics2D g2d = (Graphics2D) g;
+	//
+	// int xoff = width / 2;
+	// int yoff = height / 2;
+	//
+	// for (int p = 0; p < polyList.size(); p++) {
+	// if (currentIndex == p) {
+	// polyList.get(p).setFocusedPolygon(true);
+	// } else {
+	// polyList.get(p).setFocusedPolygon(false);
+	// }
+	// }
+	//
+	// for (int i = 0; i < polyList.size(); i++) {
+	//
+	// calcSurfaceNormals(polyList.get(i));
+	//
+	// // finds the currently used Polygon and makes its lines wider
+	// if (polyList.get(i).getFocusedPolygon()) {
+	// g2d.setStroke(new BasicStroke(5));
+	// }
+	//
+	// // for (int k = 0; k < 5; k++) {
+	// // polyList.get(i).currXPos[k] = perspective(
+	// // polyList.get(i).defXPos[k], polyList.get(i).defZPos[k]);
+	// // polyList.get(i).currYPos[k] = perspective(
+	// // polyList.get(i).defYPos[k], polyList.get(i).defZPos[k]);
+	// // }
+	//
+	// g2d.setColor(Color.BLACK);
+	//
+	// if (polyList.get(i).isVisible[0] == true) {
+	// // p0 to p1
+	// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]),
+	// (int) (polyList.get(i).currXPos[1] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[1]));
+	// // p0 to p2
+	// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]),
+	// (int) (polyList.get(i).currXPos[2] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[2]));
+	// g2d.setColor(Color.GREEN); // front side
+	// // p1 to p2
+	// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[1]),
+	// (int) (polyList.get(i).currXPos[2] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[2]));
+	// g2d.setColor(Color.BLACK);
+	// }
+	//
+	// if (polyList.get(i).isVisible[1] == true) {
+	// // p0 to p1
+	// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]),
+	// (int) (polyList.get(i).currXPos[1] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[1]));
+	// // p0 to p3
+	// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]),
+	// (int) (polyList.get(i).currXPos[3] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[3]));
+	// g2d.setColor(Color.YELLOW); // left side
+	// // p1 to p3
+	// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[1]),
+	// (int) (polyList.get(i).currXPos[3] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[3]));
+	// g2d.setColor(Color.BLACK);
+	// }
+	//
+	// if (polyList.get(i).isVisible[2] == true) {
+	// // p0 to p3
+	// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]),
+	// (int) (polyList.get(i).currXPos[3] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[3]));
+	// // p4 to p0
+	// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[4]),
+	// (int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]));
+	// g2d.setColor(Color.RED); // back side
+	// // p3 to p4
+	// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[3]),
+	// (int) (polyList.get(i).currXPos[4] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[4]));
+	// g2d.setColor(Color.BLACK);
+	// }
+	//
+	// if (polyList.get(i).isVisible[3] == true) {
+	// // p4 to p0
+	// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[4]),
+	// (int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]));
+	// // p0 to p2
+	// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[0]),
+	// (int) (polyList.get(i).currXPos[2] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[2]));
+	// g2d.setColor(Color.BLUE); // right side
+	// // p4 to p2
+	// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[4]),
+	// (int) (polyList.get(i).currXPos[2] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[2]));
+	// g2d.setColor(Color.BLACK);
+	// }
+	//
+	// if (polyList.get(i).isVisible[4] == true) {
+	// g2d.setColor(Color.BLUE); // right side
+	// // p4 to p2
+	// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[4]),
+	// (int) (polyList.get(i).currXPos[2] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[2]));
+	// g2d.setColor(Color.RED); // back side
+	// // p3 to p4
+	// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[3]),
+	// (int) (polyList.get(i).currXPos[4] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[4]));
+	// g2d.setColor(Color.YELLOW); // left side
+	// // p1 to p3
+	// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[1]),
+	// (int) (polyList.get(i).currXPos[3] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[3]));
+	// g2d.setColor(Color.GREEN); // front side
+	// // p1 to p2
+	// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[1]),
+	// (int) (polyList.get(i).currXPos[2] + xoff),
+	// (int) (yoff - polyList.get(i).currYPos[2]));
+	// g2d.setColor(Color.BLACK);
+	// }
+	//
+	// g2d.setColor(Color.BLACK);
+	//
+	// if (polyList.get(i).getFocusedPolygon()) {
+	// g2d.setStroke(new BasicStroke(1));
+	// }
+	// }
+	//
+	// }
 
 	/**
 	 * Method that moves all of the Y points of the selected polygon in the
 	 * positive y position
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void moveUp(Trangle trng) {
+	public void moveUp(Polygon poly) {
 		Boolean actionBool = false;
 		for (int i = 0; i < 5; i++) {
-			if (!(trng.currYPos[i] >= (height / 2))) {
+			if (!(poly.perspectivePolygonPoints[i].y >= (height / 2))) {
 				actionBool = true;
 			} else {
 				actionBool = false;
@@ -864,13 +958,13 @@ public class GraphicsProgram extends JFrame {
 			}
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		if (actionBool == true) {
 			for (int i = 0; i < 5; i++) {
-				trng.defYPos[i] = trng.defYPos[i] + 10;
+				poly.polyPosition[i].y += 10;
 			}
-			trng.midYPnt = trng.midYPnt + 10;
+			poly.polyMidPoint.y += 10;
 		}
 	}
 
@@ -878,13 +972,13 @@ public class GraphicsProgram extends JFrame {
 	 * Method that move all of the Y points of the selected polygon in the
 	 * negative y position
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void moveDwn(Trangle trng) {
+	public void moveDwn(Polygon poly) {
 		Boolean actionBool = false;
 		for (int i = 0; i < 5; i++) {
-			if (!(trng.currYPos[i] <= -height / 2)) {
+			if (!(poly.perspectivePolygonPoints[i].y <= -height / 2)) {
 				actionBool = true;
 			} else {
 				actionBool = false;
@@ -892,13 +986,13 @@ public class GraphicsProgram extends JFrame {
 			}
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		if (actionBool == true) {
 			for (int i = 0; i < 5; i++) {
-				trng.defYPos[i] = trng.defYPos[i] - 10;
+				poly.polyPosition[i].y -= 10;
 			}
-			trng.midYPnt = trng.midYPnt - 10;
+			poly.polyMidPoint.y -= 10;
 		}
 	}
 
@@ -906,13 +1000,13 @@ public class GraphicsProgram extends JFrame {
 	 * Method that moves all of the x points of the selected polygon in the
 	 * positive x position
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void moveRght(Trangle trng) {
+	public void moveRght(Polygon poly) {
 		Boolean actionBool = false;
 		for (int i = 0; i < 5; i++) {
-			if (!(trng.currXPos[i] >= width / 2)) {
+			if (!(poly.perspectivePolygonPoints[i].x >= width / 2)) {
 				actionBool = true;
 			} else {
 				actionBool = false;
@@ -920,13 +1014,13 @@ public class GraphicsProgram extends JFrame {
 			}
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		if (actionBool == true) {
 			for (int i = 0; i < 5; i++) {
-				trng.defXPos[i] = trng.defXPos[i] + 10;
+				poly.polyPosition[i].x += 10;
 			}
-			trng.midXPnt = trng.midXPnt + 10;
+			poly.polyMidPoint.x += 10;
 		}
 	}
 
@@ -934,13 +1028,13 @@ public class GraphicsProgram extends JFrame {
 	 * Method that moves all of the x points of the selected polygon in the
 	 * negative x positon
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void moveLft(Trangle trng) {
+	public void moveLft(Polygon poly) {
 		Boolean actionBool = false;
 		for (int i = 0; i < 5; i++) {
-			if (!(trng.currXPos[i] <= -(width / 2))) {
+			if (!(poly.perspectivePolygonPoints[i].x <= -(width / 2))) {
 				actionBool = true;
 			} else {
 				actionBool = false;
@@ -948,13 +1042,13 @@ public class GraphicsProgram extends JFrame {
 			}
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		if (actionBool == true) {
 			for (int i = 0; i < 5; i++) {
-				trng.defXPos[i] = trng.defXPos[i] - 10;
+				poly.polyPosition[i].x -= 10;
 			}
-			trng.midXPnt = trng.midXPnt - 10;
+			poly.polyMidPoint.x -= 10;
 		}
 	}
 
@@ -962,15 +1056,15 @@ public class GraphicsProgram extends JFrame {
 	 * Method that increases the size of selected polygon by increasing the
 	 * distance of all the points from one another
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void scaleUp(Trangle trng) {
+	public void scaleUp(Polygon poly) {
 		Boolean actionBool = false;
 		for (int i = 0; i < 5; i++) {
-			if (!(trng.currXPos[i] >= width / 2
-					|| trng.currYPos[i] >= height / 2
-					|| trng.currYPos[i] <= -height / 2 || trng.currXPos[i] <= -(width / 2))) {
+			if (!(poly.perspectivePolygonPoints[i].x >= width / 2
+					|| poly.perspectivePolygonPoints[i].y >= height / 2
+					|| poly.perspectivePolygonPoints[i].y <= -height / 2 || poly.perspectivePolygonPoints[i].x <= -(width / 2))) {
 				actionBool = true;
 			} else {
 				actionBool = false;
@@ -978,19 +1072,15 @@ public class GraphicsProgram extends JFrame {
 			}
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		if (actionBool == true) {
 			for (int i = 0; i < 5; i++) {
-				trng.defXPos[i] = trng.defXPos[i] - trng.midXPnt;
-				trng.defYPos[i] = trng.defYPos[i] - trng.midYPnt;
-				trng.defZPos[i] = trng.defZPos[i] - trng.midZPnt;
-				trng.defXPos[i] = (trng.defXPos[i] * 1.05);
-				trng.defYPos[i] = (trng.defYPos[i] * 1.05);
-				trng.defZPos[i] = (trng.defZPos[i] * 1.05);
-				trng.defXPos[i] = trng.defXPos[i] + trng.midXPnt;
-				trng.defYPos[i] = trng.defYPos[i] + trng.midYPnt;
-				trng.defZPos[i] = trng.defZPos[i] + trng.midZPnt;
+				poly.polyPosition[i] = subtractPoints(poly.polyPosition[i],
+						poly.polyMidPoint);
+				poly.polyPosition[i] = multiPoints(poly.polyPosition[i], 1.05);
+				poly.polyPosition[i] = addPoints(poly.polyPosition[i],
+						poly.polyMidPoint);
 			}
 		}
 	}
@@ -999,23 +1089,19 @@ public class GraphicsProgram extends JFrame {
 	 * Method that decreases the size of a polygon by decreasing the distance of
 	 * all the points from one another
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void scaleDwn(Trangle trng) {
+	public void scaleDwn(Polygon poly) {
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		for (int i = 0; i < 5; i++) {
-			trng.defXPos[i] = trng.defXPos[i] - trng.midXPnt;
-			trng.defYPos[i] = trng.defYPos[i] - trng.midYPnt;
-			trng.defZPos[i] = trng.defZPos[i] - trng.midZPnt;
-			trng.defXPos[i] = (trng.defXPos[i] * .95);
-			trng.defYPos[i] = (trng.defYPos[i] * .95);
-			trng.defZPos[i] = (trng.defZPos[i] * .95);
-			trng.defXPos[i] = trng.defXPos[i] + trng.midXPnt;
-			trng.defYPos[i] = trng.defYPos[i] + trng.midYPnt;
-			trng.defZPos[i] = trng.defZPos[i] + trng.midZPnt;
+			poly.polyPosition[i] = subtractPoints(poly.polyPosition[i],
+					poly.polyMidPoint);
+			poly.polyPosition[i] = multiPoints(poly.polyPosition[i], .95);
+			poly.polyPosition[i] = addPoints(poly.polyPosition[i],
+					poly.polyMidPoint);
 		}
 	}
 
@@ -1023,60 +1109,60 @@ public class GraphicsProgram extends JFrame {
 	 * Method that moves all of the z points of the selected polygon into the
 	 * positive z direction (right hand rule)
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void moveForward(Trangle trng) {
+	public void moveForward(Polygon poly) {
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		for (int i = 0; i < 5; i++) {
-			trng.defZPos[i] = trng.defZPos[i] - 100;
+			poly.polyPosition[i].z -= 100;
 		}
-		trng.midZPnt = trng.midZPnt - 100;
+		poly.polyMidPoint.z -= 100;
 	}
 
 	/**
 	 * Method that moves all of the z points of the selected polygon into the
 	 * negative z direction (right hand rule)
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void moveBackward(Trangle trng) {
+	public void moveBackward(Polygon poly) {
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		for (int i = 0; i < 5; i++) {
-			trng.defZPos[i] = trng.defZPos[i] + 100;
+			poly.polyPosition[i].z += 100;
 		}
-		trng.midZPnt = trng.midZPnt + 100;
+		poly.polyMidPoint.z += 100;
 	}
 
 	/**
 	 * Method that rotates the selected polygon around the z axis
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void rotateZ(Trangle trng, boolean bool) { // counter clockwise
+	public void rotateZ(Polygon poly, boolean bool) { // counter clockwise
 
 		double theta = 25.0;
 		if (bool) {
 			theta = -25.0;
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		for (int i = 0; i < 5; i++) {
-			double currX = trng.defXPos[i] - trng.midXPnt;
-			double currY = trng.defYPos[i] - trng.midYPnt;
+			double currX = poly.polyPosition[i].x - poly.polyMidPoint.x;
+			double currY = poly.polyPosition[i].y - poly.polyMidPoint.y;
 			double tempX = (currX * Math.cos(theta) - currY * Math.sin(theta));
 			double tempY = (currX * Math.sin(theta) + currY * Math.cos(theta));
-			tempX = tempX + trng.midXPnt;
-			tempY = tempY + trng.midYPnt;
-			trng.defXPos[i] = tempX;
-			trng.defYPos[i] = tempY;
+			tempX = tempX + poly.polyPosition[i].x;
+			tempY = tempY + poly.polyPosition[i].y;
+			poly.polyPosition[i].x = tempX;
+			poly.polyPosition[i].y = tempY;
 		}
 
 	}
@@ -1084,27 +1170,27 @@ public class GraphicsProgram extends JFrame {
 	/**
 	 * Method that rotates the selected polygon around the y axis
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void rotateY(Trangle trng, boolean bool) {
+	public void rotateY(Polygon poly, boolean bool) {
 
 		double theta = 25.0;
 		if (bool) {
 			theta = -25.0;
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 
 		for (int i = 0; i < 5; i++) {
-			double currX = trng.defXPos[i] - trng.midXPnt;
-			double currZ = trng.defZPos[i] - trng.midZPnt;
+			double currX = poly.polyPosition[i].x - poly.polyMidPoint.x;
+			double currZ = poly.polyPosition[i].z - poly.polyMidPoint.z;
 			double tempX = (currX * Math.cos(theta) - currZ * Math.sin(theta));
 			double tempZ = (currX * Math.sin(theta) + currZ * Math.cos(theta));
-			tempX = tempX + trng.midXPnt;
-			tempZ = tempZ + trng.midZPnt;
-			trng.defXPos[i] = tempX;
-			trng.defZPos[i] = tempZ;
+			tempX = tempX + poly.polyPosition[i].x;
+			tempZ = tempZ + poly.polyPosition[i].z;
+			poly.polyPosition[i].x = tempX;
+			poly.polyPosition[i].z = tempZ;
 		}
 
 	}
@@ -1112,26 +1198,26 @@ public class GraphicsProgram extends JFrame {
 	/**
 	 * Method that rotates the selected polygon around the x axis
 	 * 
-	 * @param Trangle
-	 *            trng
+	 * @param Polygon
+	 *            poly
 	 */
-	public void rotateX(Trangle trng, boolean bool) {
+	public void rotateX(Polygon poly, boolean bool) {
 
 		double theta = 25.0;
 		if (bool) {
 			theta = -25.0;
 		}
 
-		calcMidPoints(trng);
+		calcMidPoints(poly);
 		for (int i = 0; i < 5; i++) {
-			double currY = trng.defYPos[i] - trng.midYPnt;
-			double currZ = trng.defZPos[i] - trng.midZPnt;
+			double currY = poly.polyPosition[i].y - poly.polyMidPoint.y;
+			double currZ = poly.polyPosition[i].z - poly.polyMidPoint.z;
 			double tempY = (currY * Math.cos(theta) - currZ * Math.sin(theta));
 			double tempZ = (currY * Math.sin(theta) + currZ * Math.cos(theta));
-			tempY = tempY + trng.midYPnt;
-			tempZ = tempZ + trng.midZPnt;
-			trng.defYPos[i] = tempY;
-			trng.defZPos[i] = tempZ;
+			tempY = tempY + poly.polyPosition[i].y;
+			tempZ = tempZ + poly.polyPosition[i].z;
+			poly.polyPosition[i].y = tempY;
+			poly.polyPosition[i].z = tempZ;
 		}
 
 	}
@@ -1141,7 +1227,7 @@ public class GraphicsProgram extends JFrame {
 	 * 
 	 * @param g
 	 */
-	private void doStuff(Graphics g) {
+	private void drawBackground(Graphics g) {
 
 		setBackground(Color.WHITE);
 
@@ -1164,14 +1250,12 @@ public class GraphicsProgram extends JFrame {
 	 * @param g
 	 */
 	public void paintComponent(Graphics g) {
-		doStuff(g);
-		if (backface) {
-			drawTrangleWithBackFaceCulling(g);
-		} else if (zbuffertoggle) {
-			drawTriangleWithZBuffer(g);
-		} else {
-			drawTrangle(g);
-		}
+		drawBackground(g);
+		// if (backface) {
+		// drawPolygonWithBackFaceCulling(g);
+		// } else {
+		drawPolygon(g);
+		// }
 		repaint();
 	}
 
