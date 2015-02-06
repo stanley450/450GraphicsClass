@@ -313,38 +313,6 @@ public class GraphicsProgram extends JFrame {
  
     }
  
-    public double triangleNormals(double x1, double y1, double z1, double x2,
-            double y2, double z2, double x3, double y3, double z3) {
- 
-        // vector 1
-        double vect2x = x1 - x3;
-        double vect2y = y1 - y3;
-        double vect2z = z1 - z3;
- 
-        // vector 2
-        double vect1x = x2 - x3;
-        double vect1y = y2 - y3;
-        double vect1z = z2 - z3;
- 
-        // normal vector from the two vectors of the triangle
-        double normX = (vect1y * vect2z) - (vect1z * vect2y);
-        double normY = (vect1z * vect2x) - (vect1x * vect2z);
-        double normZ = (vect1x * vect2y) - (vect1y * vect2x);
-        // double normZ = ((x2 - x3) * (y1 - y3)) - ((x1 - x3) * (y2 - y3));
- 
-        double normOffset = (x3 * normX) - (y3 * normY) + (z3 * normZ);
- 
-        // double normX = y1 * (z2-z3) + y2 * (z3-z1) + y3 * (z1-z2);
-        // double normY = z1 * (x2-x3) + z2 * (x3-x1) + z3 * (x1-x2);
-        // double normZ = x1 * (y2-y3) + x2 * (y3-y1) + x3 * (y1-y2);
-        //
-        // double normOffset = x1 * (y2*z3 - y3*z2) + x2 * (y3*z1 - y1*z3) + x3
-        // * (y1*z2 - y2*z1);
- 
-        // final equation to compute visibility
-        return (-eye * normZ) - normOffset;
-    }
- 
     public double calcSurfaceNormals(int trngnum, Trangle trng) {
  
         double vect1x, vect1y, vect1z;
@@ -367,7 +335,7 @@ public class GraphicsProgram extends JFrame {
  
             // normal vector from the two vectors of the triangle
             normX = (vect1y * vect2z) - (vect1z * vect2y);
-            normY = -(vect1z * vect2x) - (vect1x * vect2z);
+            normY = -(vect2z * vect1x) + (vect2x * vect1z);
             normZ = (vect1x * vect2y) - (vect1y * vect2x);
  
             // "plane offset" D used in calc
@@ -387,7 +355,7 @@ public class GraphicsProgram extends JFrame {
             vect2z = trng.defZPos[1] - trng.defZPos[0];
  
             normX = (vect1y * vect2z) - (vect1z * vect2y);
-            normY = -(vect1z * vect2x) - (vect1x * vect2z);
+            normY = -(vect2z * vect1x) + (vect2x * vect1z);
             normZ = (vect1x * vect2y) - (vect1y * vect2x);
  
             normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
@@ -405,7 +373,7 @@ public class GraphicsProgram extends JFrame {
             vect2z = trng.defZPos[3] - trng.defZPos[0];
  
             normX = (vect1y * vect2z) - (vect1z * vect2y);
-            normY = -(vect1z * vect2x) - (vect1x * vect2z);
+            normY = -(vect2z * vect1x) + (vect2x * vect1z);
             normZ = (vect1x * vect2y) - (vect1y * vect2x);
  
             normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
@@ -424,7 +392,7 @@ public class GraphicsProgram extends JFrame {
             vect2z = trng.defZPos[4] - trng.defZPos[0];
  
             normX = (vect1y * vect2z) - (vect1z * vect2y);
-            normY = -(vect1z * vect2x) - (vect1x * vect2z);
+            normY = -(vect2z * vect1x) + (vect2x * vect1z);
             normZ = (vect1x * vect2y) - (vect1y * vect2x);
  
             normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
@@ -443,7 +411,7 @@ public class GraphicsProgram extends JFrame {
             vect2z = trng.defZPos[2] - trng.defZPos[1];
  
             normX = (vect1y * vect2z) - (vect1z * vect2y);
-            normY = -(vect1z * vect2x) - (vect1x * vect2z);
+            normY = -(vect2z * vect1x) + (vect2x * vect1z);
             normZ = (vect1x * vect2y) - (vect1y * vect2x);
  
             normOffset = (trng.defXPos[3] * normX) - (trng.defYPos[3] * normY)
@@ -462,7 +430,7 @@ public class GraphicsProgram extends JFrame {
             vect2z = trng.defZPos[3] - trng.defZPos[4];
  
             normX = (vect1y * vect2z) - (vect1z * vect2y);
-            normY = -(vect1z * vect2x) - (vect1x * vect2z);
+            normY = -(vect2z * vect1x) + (vect2x * vect1z);
             normZ = (vect1x * vect2y) - (vect1y * vect2x);
  
             normOffset = (trng.defXPos[3] * normX) - (trng.defYPos[3] * normY)
@@ -528,7 +496,7 @@ public class GraphicsProgram extends JFrame {
         double y3 = perspective(defy3, defz3);
         double z3 = defz3 / (eye * defz3);
  
-        if (!backface || !(normalvalue > 0)) {
+        if (!backface || !(normalvalue >= 0)) {
              
             int xoff = width / 2;
             int yoff = height / 2;
@@ -561,7 +529,7 @@ public class GraphicsProgram extends JFrame {
             endpoints[2][0] = x1;
             endpoints[2][1] = y1;
             endpoints[2][2] = z1;
- 
+            
             double[][] ymax = new double[3][2];
             double[][] ymin = new double[3][2];
             double[] dx = new double[3];
@@ -572,12 +540,51 @@ public class GraphicsProgram extends JFrame {
                 if (startpoints[i][1] > endpoints[i][1]) {
                     ymax[i] = startpoints[i];
                     ymin[i] = endpoints[i];
+                 
                 } else {
                     ymin[i] = startpoints[i];
                     ymax[i] = endpoints[i];
+                    
                 }
             }
- 
+            
+            double[][] tempmax = new double[3][2];
+            double[][] tempmin = new double[3][2];
+            
+            if(ymax[0][1] >= ymax[1][1] && ymax[0][1] >= ymax[2][1]
+                    && ymin[0][1] >= ymin[1][1] && ymin[0][1] >= ymin[2][1]){
+            	tempmax[0] = ymax[0];
+            	tempmin[0] = ymin[0];
+            	if(ymax[1][1] >= ymax[2][1] && ymin[1][1] >= ymin[2][1]){
+            		tempmax[1] = ymax[1];
+            		tempmin[1] = ymin[1];
+            		tempmax[2] = ymax[2];
+            		tempmin[2] = ymin[2];
+            	} else {
+            		tempmax[1] = ymax[2];
+            		tempmin[1] = ymin[2];
+            		tempmax[2] = ymax[1];
+            		tempmin[2] = ymin[1];
+            	}
+            } else {
+            	tempmax[2] = ymax[0];
+            	tempmin[2] = ymin[0];
+            	if(ymax[1][1] >= ymax[2][1] && ymin[1][1] >= ymin[2][1]){
+            		tempmax[0] = ymax[1];
+            		tempmin[0] = ymin[1];
+            		tempmax[1] = ymax[2];
+            		tempmin[1] = ymin[2];
+            	} else {
+            		tempmax[0] = ymax[2];
+            		tempmin[0] = ymin[2];
+            		tempmax[1] = ymax[1];
+            		tempmin[1] = ymin[1];
+            	}
+            }
+            
+            ymax = tempmax;
+            ymin = tempmin;
+            
             // edge sorting
             if (ymax[0][1] >= ymax[1][1] && ymax[0][1] >= ymax[2][1]
                     && ymin[0][1] >= ymin[1][1] && ymin[0][1] >= ymin[2][1]) {
@@ -622,6 +629,8 @@ public class GraphicsProgram extends JFrame {
  
             double ystart = ymax[0][1];
             double yend = ymin[1][1];
+            
+            double left, right;
  
             g2d.setColor(Color.BLUE);
  
@@ -671,8 +680,8 @@ public class GraphicsProgram extends JFrame {
                     x[0] = x[0] + (dx[0]);
                     x[1] = x[1] + (dx[1]);
  
-                } else if ((i <= startpoints[1][1] && i > endpoints[1][1])
-                        && (i <= startpoints[2][1] && i > endpoints[2][1])) {
+                } else if ((i < startpoints[1][1] && i >= endpoints[1][1])
+                        && (i < startpoints[2][1] && i >= endpoints[2][1])) {
  
                     if (x[2] >= x[1]) {
                         for (int k = (int) x[1]; k < x[2]; k++) {
