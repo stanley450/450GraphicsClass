@@ -133,13 +133,6 @@ public class GraphicsProgram extends JFrame {
 		public Trangle() {
 			setDefault(this);
 			setFocusedTrangle(true);
-
-			// Different polys for the figure are
-			// Triangle 1 - p0, p1, p2
-			// Triangle 2 - p0, p3, p1
-			// Triangle 3 - p0, p3, p4
-			// Triangle 4 - p0, p4, p2
-			// SquareBase - p1, p3, p4, p2
 		}
 
 		/**
@@ -486,8 +479,8 @@ public class GraphicsProgram extends JFrame {
 
 		double normalvalue = calcSurfaceNormals(trngnum, trng);
 
-		 System.out.println("normalvalue + trngnum = " + normalvalue + " " +
-		 trngnum);
+		System.out.println("normalvalue + trngnum = " + normalvalue + " "
+				+ trngnum);
 
 		double x1 = perspective(defx1, defz1);
 		double y1 = perspective(defy1, defz1);
@@ -635,7 +628,6 @@ public class GraphicsProgram extends JFrame {
 
 			double left, right;
 
-			
 			if (!polyfillnoedges) {
 				g2d.setColor(Color.BLACK);
 				g2d.drawLine((int) (startpoints[0][0] + xoff),
@@ -651,107 +643,282 @@ public class GraphicsProgram extends JFrame {
 						(int) (endpoints[2][0] + xoff),
 						(int) (yoff - endpoints[2][1]));
 			}
-			
 
 			for (int i = (int) ystart; i > yend; i--) {
-				if ((i <= startpoints[1][1] && i >= endpoints[1][1])
-						&& (i <= startpoints[0][1] && i >= endpoints[0][1])) {
+				if (zbuffertoggle) {
 
-					if (x[0] >= x[1]) {
-						for (int k = (int) x[1]; k < x[0]; k++) {
-							if (polyfillnoedges) {
-								g2d.drawLine((k + xoff), (yoff - i),
-										(k + xoff), (yoff - i));
-							} else {
-								if (k <= (int) x[1] || k >= (int) x[0]) {
-									g2d.setColor(Color.BLACK);
-									g2d.drawLine((k + xoff), (yoff - i),
-											(k + xoff), (yoff - i));
-								} else {
-									g2d.setColor(Color.BLUE);
-									if (polyfilledges) {
+					double zbuff1 = startpoints[0][2];
+					double zbuff2 = startpoints[1][2];
+					double zbuff3 = startpoints[2][2];
+					double zxtemp;
+					if ((i <= startpoints[1][1] && i >= endpoints[1][1])
+							&& (i <= startpoints[0][1] && i >= endpoints[0][1])) {
+						if (x[0] >= x[1]) {
+							zxtemp = x[1];
+							zbuff1 = zbuff1
+									+ ((endpoints[1][2] - startpoints[1][2]) / (endpoints[1][1] - startpoints[1][1]));
+							zBuffArray[(int) (x[1] + width / 2)][(i + height / 2)] = zbuff1;
+							zbuff2 = zbuff2
+									+ ((endpoints[0][2] - startpoints[0][2]) / (endpoints[0][1] - startpoints[0][1]));
+							zBuffArray[(int) (x[0] + width / 2)][(i + height / 2)] = zbuff2;
+
+							for (int k = (int) x[1]; k < x[0]; k++) {
+								zxtemp = zxtemp
+										+ ((zbuff2 - zbuff1) / (x[0] - x[1]));
+								zBuffArray[k + width/2][i + height/2] = zxtemp;
+
+								if (zBuffArray[k + width/2][i + height/2] > zxtemp) {
+									if (polyfillnoedges) {
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[1] || k >= (int) x[0]) {
+											g2d.setColor(Color.BLACK);
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										} else {
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
+												g2d.drawLine((k + xoff),
+														(yoff - i), (k + xoff),
+														(yoff - i));
+											}
+										}
+									}
+								}
+							}
+						} else {
+
+							zxtemp = x[0];
+							zbuff1 = zbuff1
+									+ ((endpoints[0][2] - startpoints[0][2]) / (endpoints[0][1] - startpoints[0][1]));
+							zBuffArray[(int) (x[0] + width / 2)][(i + height / 2)] = zbuff1;
+							zbuff2 = zbuff2
+									+ ((endpoints[1][2] - startpoints[1][2]) / (endpoints[1][1] - startpoints[1][1]));
+							zBuffArray[(int) (x[1] + width / 2)][(i + height / 2)] = zbuff2;
+
+							for (int k = (int) x[0]; k < x[1]; k++) {
+								zxtemp = zxtemp
+										+ ((zbuff2 - zbuff1) / (x[1] - x[0]));
+								zBuffArray[k + width/2][i + height/2] = zxtemp;
+
+								if (zBuffArray[k + width/2][i + height/2] > zxtemp) {
+									if (polyfillnoedges) {
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[0] || k >= (int) x[1]) {
+											g2d.setColor(Color.BLACK);
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										} else {
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
+												g2d.drawLine((k + xoff),
+														(yoff - i), (k + xoff),
+														(yoff - i));
+											}
+										}
 									}
 								}
 							}
 						}
-					} else {
-						for (int k = (int) x[0]; k < x[1]; k++) {
-							if (polyfillnoedges) {
-								g2d.drawLine((k + xoff), (yoff - i),
-										(k + xoff), (yoff - i));
-							} else {
-								if (k <= (int) x[0] || k >= (int) x[1]) {
-									g2d.setColor(Color.BLACK);
-									g2d.drawLine((k + xoff), (yoff - i),
-											(k + xoff), (yoff - i));
-								} else {
-									g2d.setColor(Color.BLUE);
-									if (polyfilledges) {
+						x[0] = x[0] + (dx[0]);
+						x[1] = x[1] + (dx[1]);
+
+					} else if ((i < startpoints[1][1] && i >= endpoints[1][1])
+							&& (i < startpoints[2][1] && i >= endpoints[2][1])) {
+
+						if (x[2] >= x[1]) {
+
+							zxtemp = x[1];
+							zbuff1 = zbuff1
+									+ ((endpoints[1][2] - startpoints[1][2]) / (endpoints[1][1] - startpoints[1][1]));
+							zBuffArray[(int) (x[1] + width / 2)][(i + height / 2)] = zbuff1;
+							zbuff3 = zbuff3
+									+ ((endpoints[2][2] - startpoints[2][2]) / (endpoints[2][1] - startpoints[2][1]));
+							zBuffArray[(int) (x[2] + width / 2)][(i + height / 2)] = zbuff3;
+
+							for (int k = (int) x[1]; k < x[2]; k++) {
+
+								zxtemp = zxtemp
+										+ ((zbuff3 - zbuff1) / (x[2] - x[1]));
+								zBuffArray[k + width/2][i + height/2] = zxtemp;
+
+								if (zBuffArray[k + width/2][i + height/2] > zxtemp) {
+									if (polyfillnoedges) {
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[1] || k >= (int) x[2]) {
+											g2d.setColor(Color.BLACK);
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										} else {
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
+												g2d.drawLine((k + xoff),
+														(yoff - i), (k + xoff),
+														(yoff - i));
+											}
+										}
+
+									}
+								}
+							}
+						} else {
+
+							zxtemp = x[2];
+							zbuff3 = zbuff3
+									+ ((endpoints[1][2] - startpoints[1][2]) / (endpoints[1][1] - startpoints[1][1]));
+							zBuffArray[(int) (x[1] + width / 2)][(i + height / 2)] = zbuff1;
+							zbuff1 = zbuff1
+									+ ((endpoints[2][2] - startpoints[2][2]) / (endpoints[2][1] - startpoints[2][1]));
+							zBuffArray[(int) (x[2] + width / 2)][(i + height / 2)] = zbuff3;
+
+							for (int k = (int) x[2]; k < x[1]; k++) {
+
+								zxtemp = zxtemp
+										+ ((zbuff3 - zbuff1) / (x[1] - x[2]));
+								zBuffArray[k + width/2][i + height/2] = zxtemp;
+
+								if (zBuffArray[k + width/2][i + height/2] > zxtemp) {
+									if (polyfillnoedges) {
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[2] || k >= (int) x[1]) {
+											g2d.setColor(Color.BLACK);
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										} else {
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
+												g2d.drawLine((k + xoff),
+														(yoff - i), (k + xoff),
+														(yoff - i));
+											}
+										}
+
 									}
 								}
 							}
 						}
+
+						x[2] = x[2] + (dx[2]);
+						x[1] = x[1] + (dx[1]);
+
 					}
-					x[0] = x[0] + (dx[0]);
-					x[1] = x[1] + (dx[1]);
+				} else {
 
-				} else if ((i < startpoints[1][1] && i >= endpoints[1][1])
-						&& (i < startpoints[2][1] && i >= endpoints[2][1])) {
+					if ((i <= startpoints[1][1] && i >= endpoints[1][1])
+							&& (i <= startpoints[0][1] && i >= endpoints[0][1])) {
 
-					if (x[2] >= x[1]) {
-						for (int k = (int) x[1]; k < x[2]; k++) {
-							if (polyfillnoedges) {
-								g2d.drawLine((k + xoff), (yoff - i),
-										(k + xoff), (yoff - i));
-							} else {
-								if (k <= (int) x[1] || k >= (int) x[2]) {
-									g2d.setColor(Color.BLACK);
+						if (x[0] >= x[1]) {
+							for (int k = (int) x[1]; k < x[0]; k++) {
+
+								if (polyfillnoedges) {
 									g2d.drawLine((k + xoff), (yoff - i),
 											(k + xoff), (yoff - i));
 								} else {
-									g2d.setColor(Color.BLUE);
-									if (polyfilledges) {
+									if (k <= (int) x[1] || k >= (int) x[0]) {
+										g2d.setColor(Color.BLACK);
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
+									} else {
+										g2d.setColor(Color.BLUE);
+										if (polyfilledges) {
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										}
 									}
 								}
-
 							}
-						}
-					} else {
-						for (int k = (int) x[2]; k < x[1]; k++) {
-							if (polyfillnoedges) {
-								g2d.drawLine((k + xoff), (yoff - i),
-										(k + xoff), (yoff - i));
-							} else {
-								if (k <= (int) x[2] || k >= (int) x[1]) {
-									g2d.setColor(Color.BLACK);
+						} else {
+							for (int k = (int) x[0]; k < x[1]; k++) {
+								if (polyfillnoedges) {
 									g2d.drawLine((k + xoff), (yoff - i),
 											(k + xoff), (yoff - i));
 								} else {
-									g2d.setColor(Color.BLUE);
-									if (polyfilledges) {
+									if (k <= (int) x[0] || k >= (int) x[1]) {
+										g2d.setColor(Color.BLACK);
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
+									} else {
+										g2d.setColor(Color.BLUE);
+										if (polyfilledges) {
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										}
 									}
 								}
-
 							}
 						}
+						x[0] = x[0] + (dx[0]);
+						x[1] = x[1] + (dx[1]);
+
+					} else if ((i < startpoints[1][1] && i >= endpoints[1][1])
+							&& (i < startpoints[2][1] && i >= endpoints[2][1])) {
+
+						if (x[2] >= x[1]) {
+							for (int k = (int) x[1]; k < x[2]; k++) {
+								if (polyfillnoedges) {
+									g2d.drawLine((k + xoff), (yoff - i),
+											(k + xoff), (yoff - i));
+								} else {
+									if (k <= (int) x[1] || k >= (int) x[2]) {
+										g2d.setColor(Color.BLACK);
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										g2d.setColor(Color.BLUE);
+										if (polyfilledges) {
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										}
+									}
+
+								}
+							}
+						} else {
+							for (int k = (int) x[2]; k < x[1]; k++) {
+								if (polyfillnoedges) {
+									g2d.drawLine((k + xoff), (yoff - i),
+											(k + xoff), (yoff - i));
+								} else {
+									if (k <= (int) x[2] || k >= (int) x[1]) {
+										g2d.setColor(Color.BLACK);
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										g2d.setColor(Color.BLUE);
+										if (polyfilledges) {
+											g2d.drawLine((k + xoff),
+													(yoff - i), (k + xoff),
+													(yoff - i));
+										}
+									}
+
+								}
+							}
+						}
+
+						x[2] = x[2] + (dx[2]);
+						x[1] = x[1] + (dx[1]);
+
 					}
-
-					x[2] = x[2] + (dx[2]);
-					x[1] = x[1] + (dx[1]);
-
 				}
 			}
-
-			g2d.setColor(Color.BLACK); // front side
 		}
+
+		g2d.setColor(Color.BLACK); // front side
 	}
 
 	/**
@@ -773,8 +940,6 @@ public class GraphicsProgram extends JFrame {
 
 		for (int i = 0; i < polyList.size(); i++) {
 
-			// calcSurfaceNormals(polyList.get(i), backface);
-
 			// finds the currently used trangle and makes its lines wider
 			if (polyList.get(i).getFocusedTrangle()) {
 				g2d.setStroke(new BasicStroke(5));
@@ -782,210 +947,36 @@ public class GraphicsProgram extends JFrame {
 
 			g2d.setColor(Color.BLACK); // front side
 
-			// // Triangle 1
-			// if (polyList.get(i).isVisible[0] == true) {
-			// // p0 to p1
-			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]),
-			// (int) (polyList.get(i).currXPos[1] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[1]));
-			// // p0 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			// if (polyfillnoedges) {
-			// g2d.setColor(Color.BLUE);
-			// } else {
-			// g2d.setColor(Color.GREEN); // front side
-			// }
-			// // p1 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[1]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			// g2d.setColor(Color.BLACK); // front side
-			// if (polyfilledges) {
-
-			// fillTrangle(polyList.get(i).currXPos[1],
-			// polyList.get(i).currYPos[1], polyList.get(i).currZPos[1],
-			// polyList.get(i).currXPos[2], polyList.get(i).currYPos[2],
-			// polyList.get(i).currZPos[2],
-			// polyList.get(i).currXPos[0], polyList.get(i).currYPos[0],
-			// polyList.get(i).currZPos[0],
-			// g2d);
-
 			fillTrangle(polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
 					polyList.get(i).defZPos[2], polyList.get(i).defXPos[1],
 					polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
 					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
 					polyList.get(i).defZPos[0], g2d, 1, polyList.get(i));
-			// }
-			//
-			// }
-			//
-			// // Triangle 2
-			// if (polyList.get(i).isVisible[1] == true) {
-			// // p0 to p1
-			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]),
-			// (int) (polyList.get(i).currXPos[1] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[1]));
-			// // p0 to p3
-			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]),
-			// (int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]));
-			// if (polyfillnoedges) {
-			// g2d.setColor(Color.BLUE);
-			// } else {
-			// g2d.setColor(Color.YELLOW); // front side
-			// }
-			// // p1 to p3
-			// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[1]),
-			// (int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]));
-			//
-			// g2d.setColor(Color.BLACK); // front side
-			//
-			// if (polyfilledges) {
 			fillTrangle(polyList.get(i).defXPos[3], polyList.get(i).defYPos[3],
 					polyList.get(i).defZPos[3], polyList.get(i).defXPos[1],
 					polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
 					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
 					polyList.get(i).defZPos[0], g2d, 2, polyList.get(i));
-			// }
-			//
-			// }
-			//
-			// // Triangle 3
-			// if (polyList.get(i).isVisible[2] == true) {
-			// // p0 to p3
-			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]),
-			// (int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]));
-			// // p4 to p0
-			// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[4]),
-			// (int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]));
-			// g2d.setColor(Color.RED); // front side
-			// // p3 to p4
-			// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]),
-			// (int) (polyList.get(i).currXPos[4] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[4]));
-			//
-			// g2d.setColor(Color.BLACK); // front side
-			//
-			// if (polyfilledges) {
 			fillTrangle(polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
 					polyList.get(i).defZPos[4], polyList.get(i).defXPos[3],
 					polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
 					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
 					polyList.get(i).defZPos[0], g2d, 3, polyList.get(i));
-			// }
-			//
-			// }
-			//
-			// // Triangle 4
-			// if (polyList.get(i).isVisible[3] == true) {
-			// // p4 to p0
-			// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[4]),
-			// (int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]));
-			// // p0 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[0] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[0]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			// g2d.setColor(Color.BLUE); // front side
-			// // p4 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[4]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			// g2d.setColor(Color.BLACK); // front side
-			//
-			// if (polyfilledges) {
 			fillTrangle(polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
 					polyList.get(i).defZPos[2], polyList.get(i).defXPos[4],
 					polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
 					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
 					polyList.get(i).defZPos[0], g2d, 4, polyList.get(i));
-			// }
-			//
-			// }
-			//
-			// // Triangle 5
-			// if (polyList.get(i).isVisible[4] == true) {
-			// g2d.setColor(Color.BLUE); // front side
-			// // p4 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[4] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[4]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			// g2d.setColor(Color.RED); // front side
-			// // p3 to p4
-			// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]),
-			// (int) (polyList.get(i).currXPos[4] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[4]));
-			// g2d.setColor(Color.YELLOW); // front side
-			//
-			// g2d.setColor(Color.BLACK); // front side
-			//
-			// // p3 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			//
-			// if (polyfilledges) {
 			fillTrangle(polyList.get(i).defXPos[3], polyList.get(i).defYPos[3],
 					polyList.get(i).defZPos[3], polyList.get(i).defXPos[2],
 					polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
 					polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
 					polyList.get(i).defZPos[1], g2d, 5, polyList.get(i));
-			// }
-			//
-			// }
-			//
-			// // Triangle 6
-			// if (polyList.get(i).isVisible[5] == true) {
-			//
-			// // p3 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			//
-			// // p1 to p3
-			// g2d.setColor(Color.YELLOW); // front side
-			// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[1]),
-			// (int) (polyList.get(i).currXPos[3] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[3]));
-			// g2d.setColor(Color.GREEN); // front side
-			// // p1 to p2
-			// g2d.drawLine((int) (polyList.get(i).currXPos[1] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[1]),
-			// (int) (polyList.get(i).currXPos[2] + xoff),
-			// (int) (yoff - polyList.get(i).currYPos[2]));
-			// g2d.setColor(Color.BLACK); // front side
-			//
-			// if (polyfilledges) {
 			fillTrangle(polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
 					polyList.get(i).defZPos[2], polyList.get(i).defXPos[3],
 					polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
 					polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
 					polyList.get(i).defZPos[4], g2d, 6, polyList.get(i));
-			// }
-			//
-			// }
 
 			g2d.setColor(Color.BLACK); // front side
 
