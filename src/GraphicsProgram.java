@@ -418,7 +418,7 @@ public class GraphicsProgram extends JFrame {
 
 		trng.midXPnt = 0;
 		trng.midYPnt = 0;
-		trng.midZPnt = 150;
+		trng.midZPnt = 200;
 
 	}
 
