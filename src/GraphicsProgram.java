@@ -27,8 +27,8 @@ public class GraphicsProgram extends JFrame {
 
 	public double[][] zBuffArray = new double[width][height];
 
-	double inf = Double.POSITIVE_INFINITY;
-	
+	double inf = 2000;
+
 	int polyNum = 0;
 
 	// Distance from the eye to the center of the screen
@@ -638,7 +638,6 @@ public class GraphicsProgram extends JFrame {
 
 			double left, right;
 
-			
 			double zbuff1 = startpoints[0][2];
 			double zbuff2 = startpoints[2][2];
 			double zbuff3 = endpoints[1][2];
@@ -659,42 +658,25 @@ public class GraphicsProgram extends JFrame {
 							&& (i <= startpoints[0][1] && i >= endpoints[0][1])) {
 						if (x[0] >= x[1]) {
 
-							if (ztemp1 > zBuffArray[(int) (x[1] + xoff)][i
+							if (ztemp1 <= zBuffArray[(int) (x[1])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[1] + xoff)][i + yoff] = ztemp1;
+								zBuffArray[(int) (x[1])/10 + xoff][i + yoff] = ztemp1;
 							}
-							if (ztemp2 > zBuffArray[(int) (x[0] + xoff)][i
+							if (ztemp2 <= zBuffArray[(int) (x[0])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[0] + xoff)][i + yoff] = ztemp2;
+								zBuffArray[(int) (x[0])/10 + xoff][i + yoff] = ztemp2;
 							}
 							double temp1 = ztemp1;
 							double temp1edge = (ztemp2 - ztemp1)
 									/ (x[0] - x[1]);
 							for (int k = (int) x[1]; k < x[0]; k++) {
-								temp1 = temp1 + temp1edge;
-								if (temp1 < zBuffArray[(k + xoff)][i + yoff]) {
-									zBuffArray[(k + xoff)][i + yoff] = temp1;
-									
-									if (!polyfillnoedges) {
-										g2d.setColor(Color.BLACK);
-										g2d.drawLine((int) (startpoints[0][0] + xoff),
-												(int) (yoff - startpoints[0][1]),
-												(int) (endpoints[0][0] + xoff),
-												(int) (yoff - endpoints[0][1]));
-										g2d.drawLine((int) (startpoints[1][0] + xoff),
-												(int) (yoff - startpoints[1][1]),
-												(int) (endpoints[1][0] + xoff),
-												(int) (yoff - endpoints[1][1]));
-										g2d.drawLine((int) (startpoints[2][0] + xoff),
-												(int) (yoff - startpoints[2][1]),
-												(int) (endpoints[2][0] + xoff),
-												(int) (yoff - endpoints[2][1]));
-									}
+								System.out.println(zBuffArray[k + xoff][i + yoff]+ "(" + k + xoff + "," + i + yoff + ")");
+								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
+									zBuffArray[k + xoff][i + yoff] = temp1;
 
-//									System.out.println("zbuffvalue = (" + (k+xoff) +","+(i+yoff)+")" + zBuffArray[(k + xoff)][i + yoff]);
 									if (polyfillnoedges) {
-										if(trng.thisNum == 1){
-										g2d.setColor(Color.BLUE);
+										if (trng.thisNum == 1) {
+											g2d.setColor(Color.BLUE);
 										} else {
 											g2d.setColor(Color.RED);
 										}
@@ -716,50 +698,33 @@ public class GraphicsProgram extends JFrame {
 										}
 									}
 								}
+								temp1 = temp1 + temp1edge;
 							}
 						} else {
 
-							if (ztemp1 > zBuffArray[(int) (x[0] + xoff)][i
+							if (ztemp1 <= zBuffArray[(int) (x[0])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[0] + xoff)][i + yoff] = ztemp1;
+								zBuffArray[(int) (x[0])/10 + xoff][i + yoff] = ztemp1;
 							}
-							if (ztemp2 > zBuffArray[(int) (x[1] + xoff)][i
+							if (ztemp2 <= zBuffArray[(int) (x[1])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[1] + xoff)][i + yoff] = ztemp2;
+								zBuffArray[(int) (x[1])/10 + xoff][i + yoff] = ztemp2;
 							}
 
 							double temp1 = ztemp1;
 							double temp1edge = (ztemp2 - ztemp1)
 									/ (x[1] - x[0]);
 							for (int k = (int) x[0]; k < x[1]; k++) {
-								System.out.println(temp1);
-								temp1 = temp1 + temp1edge;
-								if (temp1 < zBuffArray[(k + xoff)][i + yoff]) {
+								System.out.println(zBuffArray[k + xoff][i + yoff]+ "(" + k + xoff + "," + i + yoff + ")");
+								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
 
-									zBuffArray[(k + xoff)][i + yoff] = temp1;
-									if (!polyfillnoedges) {
-										g2d.setColor(Color.BLACK);
-										g2d.drawLine((int) (startpoints[0][0] + xoff),
-												(int) (yoff - startpoints[0][1]),
-												(int) (endpoints[0][0] + xoff),
-												(int) (yoff - endpoints[0][1]));
-										g2d.drawLine((int) (startpoints[1][0] + xoff),
-												(int) (yoff - startpoints[1][1]),
-												(int) (endpoints[1][0] + xoff),
-												(int) (yoff - endpoints[1][1]));
-										g2d.drawLine((int) (startpoints[2][0] + xoff),
-												(int) (yoff - startpoints[2][1]),
-												(int) (endpoints[2][0] + xoff),
-												(int) (yoff - endpoints[2][1]));
-									}
-
-//									System.out.println("zbuffvalue = (" + (k+xoff) +","+(i+yoff)+")" + zBuffArray[(k + xoff)][i + yoff]);	
+									zBuffArray[k + xoff][i + yoff] = temp1;
 									if (polyfillnoedges) {
-										if(trng.thisNum == 1){
+										if (trng.thisNum == 1) {
 											g2d.setColor(Color.BLUE);
-											} else {
-												g2d.setColor(Color.RED);
-											}
+										} else {
+											g2d.setColor(Color.RED);
+										}
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
 									} else {
@@ -778,27 +743,29 @@ public class GraphicsProgram extends JFrame {
 										}
 									}
 								}
+								temp1 = temp1 + temp1edge;
 							}
 						}
 						x[0] = x[0] + (dx[0]);
 						x[1] = x[1] + (dx[1]);
+						
+						
 
 						ztemp1 = ztemp1 + zedge1;
 						ztemp2 = ztemp2 + zedge2;
-						
 
 					} else if ((i < startpoints[1][1] && i >= endpoints[1][1])
 							&& (i < startpoints[2][1] && i >= endpoints[2][1])) {
 
 						if (x[2] >= x[1]) {
 
-							if (ztemp3 > zBuffArray[(int) (x[1] + xoff)][i
+							if (ztemp3 <= zBuffArray[(int) (x[1])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[1] + xoff)][i + yoff] = ztemp3;
+								zBuffArray[(int) (x[1])/10 + xoff][i + yoff] = ztemp3;
 							}
-							if (ztemp2 > zBuffArray[(int) (x[2] + xoff)][i
+							if (ztemp2 <= zBuffArray[(int) (x[2])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[2] + xoff)][i + yoff] = ztemp2;
+								zBuffArray[(int) (x[2])/10 + xoff][i + yoff] = ztemp2;
 							}
 
 							double temp1 = ztemp3;
@@ -806,33 +773,16 @@ public class GraphicsProgram extends JFrame {
 									/ (x[2] - x[1]);
 
 							for (int k = (int) x[1]; k < x[2]; k++) {
-								temp1 = temp1 + temp1edge;
-								if (temp1 < zBuffArray[(k + xoff)][i + yoff]) {
+								System.out.println(zBuffArray[k + xoff][i + yoff]+ "(" + k + xoff + "," + i + yoff + ")");
+								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
 
-									zBuffArray[(k + xoff)][i + yoff] = temp1;
-									if (!polyfillnoedges) {
-										g2d.setColor(Color.BLACK);
-										g2d.drawLine((int) (startpoints[0][0] + xoff),
-												(int) (yoff - startpoints[0][1]),
-												(int) (endpoints[0][0] + xoff),
-												(int) (yoff - endpoints[0][1]));
-										g2d.drawLine((int) (startpoints[1][0] + xoff),
-												(int) (yoff - startpoints[1][1]),
-												(int) (endpoints[1][0] + xoff),
-												(int) (yoff - endpoints[1][1]));
-										g2d.drawLine((int) (startpoints[2][0] + xoff),
-												(int) (yoff - startpoints[2][1]),
-												(int) (endpoints[2][0] + xoff),
-												(int) (yoff - endpoints[2][1]));
-									}
-
-//									System.out.println("zbuffvalue = (" + (k+xoff) +","+(i+yoff)+")" + zBuffArray[(k + xoff)][i + yoff]);	
+									zBuffArray[k + xoff][i + yoff] = temp1;
 									if (polyfillnoedges) {
-										if(trng.thisNum == 1){
+										if (trng.thisNum == 1) {
 											g2d.setColor(Color.BLUE);
-											} else {
-												g2d.setColor(Color.RED);
-											}
+										} else {
+											g2d.setColor(Color.RED);
+										}
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
 									} else {
@@ -852,16 +802,17 @@ public class GraphicsProgram extends JFrame {
 
 									}
 								}
+								temp1 = temp1 + temp1edge;
 							}
 						} else {
 
-							if (ztemp3 > zBuffArray[(int) (x[2] + xoff)][i
+							if (ztemp3 <= zBuffArray[(int) (x[2])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[2] + xoff)][i + yoff] = ztemp3;
+								zBuffArray[(int) (x[2])/10 + xoff][i + yoff] = ztemp3;
 							}
-							if (ztemp2 > zBuffArray[(int) (x[1] + xoff)][i
+							if (ztemp2 <= zBuffArray[(int) (x[1])/10 + xoff][i
 									+ yoff]) {
-								zBuffArray[(int) (x[1] + xoff)][i + yoff] = ztemp2;
+								zBuffArray[(int) (x[1])/10 + xoff][i + yoff] = ztemp2;
 							}
 
 							double temp1 = ztemp3;
@@ -870,33 +821,16 @@ public class GraphicsProgram extends JFrame {
 
 							for (int k = (int) x[2]; k < x[1]; k++) {
 
-								temp1 = temp1 + temp1edge;
-								if (temp1 > zBuffArray[(k + xoff)][i + yoff]) {
-
-									zBuffArray[(k + xoff)][i + yoff] = temp1;
-									if (!polyfillnoedges) {
-										g2d.setColor(Color.BLACK);
-										g2d.drawLine((int) (startpoints[0][0] + xoff),
-												(int) (yoff - startpoints[0][1]),
-												(int) (endpoints[0][0] + xoff),
-												(int) (yoff - endpoints[0][1]));
-										g2d.drawLine((int) (startpoints[1][0] + xoff),
-												(int) (yoff - startpoints[1][1]),
-												(int) (endpoints[1][0] + xoff),
-												(int) (yoff - endpoints[1][1]));
-										g2d.drawLine((int) (startpoints[2][0] + xoff),
-												(int) (yoff - startpoints[2][1]),
-												(int) (endpoints[2][0] + xoff),
-												(int) (yoff - endpoints[2][1]));
-									}
-
-//									System.out.println("zbuffvalue = (" + (k+xoff) +","+(i+yoff)+")" + zBuffArray[(k + xoff)][i + yoff]);
+								
+								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
+									System.out.println(zBuffArray[k + xoff][i + yoff]+ "(" + k + xoff + "," + i + yoff + ")");
+									zBuffArray[k + xoff][i + yoff] = temp1;
 									if (polyfillnoedges) {
-										if(trng.thisNum == 1){
+										if (trng.thisNum == 1) {
 											g2d.setColor(Color.BLUE);
-											} else {
+										} else {
 											g2d.setColor(Color.RED);
-											}
+										}
 										g2d.drawLine((k + xoff), (yoff - i),
 												(k + xoff), (yoff - i));
 									} else {
@@ -916,6 +850,7 @@ public class GraphicsProgram extends JFrame {
 
 									}
 								}
+								temp1 = temp1 + temp1edge;
 							}
 						}
 
@@ -926,9 +861,9 @@ public class GraphicsProgram extends JFrame {
 						ztemp2 = ztemp2 + zedge2;
 
 					}
-					
+
 				} else {
-					
+
 					if (!polyfillnoedges) {
 						g2d.setColor(Color.BLACK);
 						g2d.drawLine((int) (startpoints[0][0] + xoff),
@@ -944,7 +879,6 @@ public class GraphicsProgram extends JFrame {
 								(int) (endpoints[2][0] + xoff),
 								(int) (yoff - endpoints[2][1]));
 					}
-
 
 					if ((i <= startpoints[1][1] && i >= endpoints[1][1])
 							&& (i <= startpoints[0][1] && i >= endpoints[0][1])) {
@@ -1087,31 +1021,36 @@ public class GraphicsProgram extends JFrame {
 					polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
 					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
 					polyList.get(i).defZPos[0], g2d, 1, polyList.get(i));
-			fillTrangle(polyList.get(i).defXPos[3], polyList.get(i).defYPos[3],
-					polyList.get(i).defZPos[3], polyList.get(i).defXPos[1],
-					polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
-					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-					polyList.get(i).defZPos[0], g2d, 2, polyList.get(i));
-			fillTrangle(polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
-					polyList.get(i).defZPos[4], polyList.get(i).defXPos[3],
-					polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
-					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-					polyList.get(i).defZPos[0], g2d, 3, polyList.get(i));
-			fillTrangle(polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
-					polyList.get(i).defZPos[2], polyList.get(i).defXPos[4],
-					polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
-					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-					polyList.get(i).defZPos[0], g2d, 4, polyList.get(i));
-			fillTrangle(polyList.get(i).defXPos[3], polyList.get(i).defYPos[3],
-					polyList.get(i).defZPos[3], polyList.get(i).defXPos[2],
-					polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
-					polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
-					polyList.get(i).defZPos[1], g2d, 5, polyList.get(i));
-			fillTrangle(polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
-					polyList.get(i).defZPos[2], polyList.get(i).defXPos[3],
-					polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
-					polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
-					polyList.get(i).defZPos[4], g2d, 6, polyList.get(i));
+			// fillTrangle(polyList.get(i).defXPos[3],
+			// polyList.get(i).defYPos[3],
+			// polyList.get(i).defZPos[3], polyList.get(i).defXPos[1],
+			// polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
+			// polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
+			// polyList.get(i).defZPos[0], g2d, 2, polyList.get(i));
+			// fillTrangle(polyList.get(i).defXPos[4],
+			// polyList.get(i).defYPos[4],
+			// polyList.get(i).defZPos[4], polyList.get(i).defXPos[3],
+			// polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+			// polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
+			// polyList.get(i).defZPos[0], g2d, 3, polyList.get(i));
+			// fillTrangle(polyList.get(i).defXPos[2],
+			// polyList.get(i).defYPos[2],
+			// polyList.get(i).defZPos[2], polyList.get(i).defXPos[4],
+			// polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
+			// polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
+			// polyList.get(i).defZPos[0], g2d, 4, polyList.get(i));
+			// fillTrangle(polyList.get(i).defXPos[3],
+			// polyList.get(i).defYPos[3],
+			// polyList.get(i).defZPos[3], polyList.get(i).defXPos[2],
+			// polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
+			// polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
+			// polyList.get(i).defZPos[1], g2d, 5, polyList.get(i));
+			// fillTrangle(polyList.get(i).defXPos[2],
+			// polyList.get(i).defYPos[2],
+			// polyList.get(i).defZPos[2], polyList.get(i).defXPos[3],
+			// polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+			// polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
+			// polyList.get(i).defZPos[4], g2d, 6, polyList.get(i));
 
 			g2d.setColor(Color.BLACK); // front side
 
