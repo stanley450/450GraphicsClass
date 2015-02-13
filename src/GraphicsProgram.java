@@ -98,7 +98,7 @@ public class GraphicsProgram extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Please Work");
 		addKeyListener(new myKeyListener());
-		Trangle mangle = new Trangle();
+		Trangle mangle = new Trangle(true);
 		polyList.add(mangle);
 		setVisible(true);
 
@@ -115,12 +115,17 @@ public class GraphicsProgram extends JFrame {
 	 */
 	class Trangle {
 		int thisNum;
-		// x y z positions of the a figure
-		double[] defXPos = new double[5];
-		double[] defYPos = new double[5];
-		double[] defZPos = new double[5];
+		boolean isPyrm = true;
 
-		boolean[] isVisible = new boolean[6];
+		// x y z positions of the a figure
+		double[] defXPos;
+		double[] defYPos;
+		double[] defZPos;
+
+		// actual 2d dimensions of the polygon
+		double[] currXPos;
+		double[] currYPos;
+		double[] currZPos;
 
 		// logical midpoint of the polygon
 		double midXPnt;
@@ -133,19 +138,34 @@ public class GraphicsProgram extends JFrame {
 
 		boolean isFocused = false;
 
-		// actual 2d dimensions of the polygon
-		double[] currXPos = new double[5];
-		double[] currYPos = new double[5];
-		double[] currZPos = new double[5];
-
 		/**
 		 * Trangle constructor
 		 */
-		public Trangle() {
-			setDefault(this);
-			setFocusedTrangle(true);
-			thisNum = polyNum;
-			polyNum++;
+		public Trangle(boolean bool) {
+			isPyrm = bool;
+			if (isPyrm) {
+				defXPos = new double[5];
+				defYPos = new double[5];
+				defZPos = new double[5];
+				currXPos = new double[5];
+				currYPos = new double[5];
+				currZPos = new double[5];
+				setDefault(this);
+				setFocusedTrangle(true);
+				thisNum = polyNum;
+				polyNum++;
+			} else {
+				defXPos = new double[16];
+				defYPos = new double[16];
+				defZPos = new double[16];
+				currXPos = new double[16];
+				currYPos = new double[16];
+				currZPos = new double[16];
+				setDefaultCyl(this);
+				setFocusedTrangle(true);
+				thisNum = polyNum;
+				polyNum++;
+			}
 		}
 
 		/**
@@ -182,8 +202,13 @@ public class GraphicsProgram extends JFrame {
 				closeonescape();
 			case KeyEvent.VK_INSERT: // press "insert" key to create a new
 										// object and select it
-				polyList.add(new Trangle());
-				currentIndex = polyList.size() - 1;
+				if (e.isShiftDown()) {
+					polyList.add(new Trangle(false));
+					currentIndex = polyList.size() - 1;
+				} else {
+					polyList.add(new Trangle(true));
+					currentIndex = polyList.size() - 1;
+				}
 				break;
 			case KeyEvent.VK_PAGE_UP: // press "page up" key to cycle through
 										// objects from the first object and
@@ -279,7 +304,11 @@ public class GraphicsProgram extends JFrame {
 				break;
 			case KeyEvent.VK_ENTER: // press enter to return to the default
 									// position
-				setDefault(polyList.get(currentIndex));
+				if (polyList.get(currentIndex).isPyrm) {
+					setDefault(polyList.get(currentIndex));
+				} else {
+					setDefaultCyl(polyList.get(currentIndex));
+				}
 				break;
 			}
 			repaint();
@@ -321,135 +350,111 @@ public class GraphicsProgram extends JFrame {
 
 	}
 
-	public double calcSurfaceNormals(int trngnum, Trangle trng) {
+	public void setDefaultCyl(Trangle trng) {
+		// p0
+		trng.defXPos[0] = -25;
+		trng.defYPos[0] = 50;
+		trng.defZPos[0] = 100;
+		// p1
+		trng.defXPos[1] = 25;
+		trng.defYPos[1] = 50;
+		trng.defZPos[1] = 100;
+		// p2
+		trng.defXPos[2] = 50;
+		trng.defYPos[2] = 25;
+		trng.defZPos[2] = 100;
+		// p3
+		trng.defXPos[3] = 50;
+		trng.defYPos[3] = -25;
+		trng.defZPos[3] = 100;
+		// p4
+		trng.defXPos[4] = 25;
+		trng.defYPos[4] = -50;
+		trng.defZPos[4] = 100;
+		// p5
+		trng.defXPos[5] = -25;
+		trng.defYPos[5] = -50;
+		trng.defZPos[5] = 100;
+		// p6
+		trng.defXPos[6] = -50;
+		trng.defYPos[6] = -25;
+		trng.defZPos[6] = 100;
+		// p7
+		trng.defXPos[7] = -50;
+		trng.defYPos[7] = 25;
+		trng.defZPos[7] = 100;
+		// p8
+		trng.defXPos[8] = -25;
+		trng.defYPos[8] = 50;
+		trng.defZPos[8] = 300;
+		// p9
+		trng.defXPos[9] = 25;
+		trng.defYPos[9] = 50;
+		trng.defZPos[9] = 300;
+		// p10
+		trng.defXPos[10] = 50;
+		trng.defYPos[10] = 25;
+		trng.defZPos[10] = 300;
+		// p11
+		trng.defXPos[11] = 50;
+		trng.defYPos[11] = -25;
+		trng.defZPos[11] = 300;
+		// p12
+		trng.defXPos[12] = 25;
+		trng.defYPos[12] = -50;
+		trng.defZPos[12] = 300;
+		// p13
+		trng.defXPos[13] = -25;
+		trng.defYPos[13] = -50;
+		trng.defZPos[13] = 300;
+		// p14
+		trng.defXPos[14] = -50;
+		trng.defYPos[14] = -25;
+		trng.defZPos[14] = 300;
+		// p15
+		trng.defXPos[15] = -50;
+		trng.defYPos[15] = 25;
+		trng.defZPos[15] = 300;
 
+		trng.midXPnt = 0;
+		trng.midYPnt = 0;
+		trng.midZPnt = 150;
+
+	}
+
+	public double calcTriangleNormal(double x1, double y1, double z1,
+			double x2, double y2, double z2, double x3, double y3, double z3) {
 		double vect1x, vect1y, vect1z;
 
 		double vect2x, vect2y, vect2z;
 
 		double normX, normY, normZ, normOffset;
 
-		if (trngnum == 1) {
-			// Triangle 1 normals
-			// vector 1
-			vect1x = trng.defXPos[1] - trng.defXPos[0];
-			vect1y = trng.defYPos[1] - trng.defYPos[0];
-			vect1z = trng.defZPos[1] - trng.defZPos[0];
+		// point 3 will be the top x3,y3,z3
 
-			// vector 2
-			vect2x = trng.defXPos[2] - trng.defXPos[0];
-			vect2y = trng.defYPos[2] - trng.defYPos[0];
-			vect2z = trng.defZPos[2] - trng.defZPos[0];
+		// vector 1
+		vect1x = x1 - x3;
+		vect1y = y1 - y3;
+		vect1z = z1 - z3;
 
-			// normal vector from the two vectors of the triangle
-			normX = (vect1y * vect2z) - (vect1z * vect2y);
-			normY = -(vect2z * vect1x) + (vect2x * vect1z);
-			normZ = (vect1x * vect2y) - (vect1y * vect2x);
+		// vector 2
+		vect2x = x2 - x3;
+		vect2y = y2 - y3;
+		vect2z = z2 - z3;
 
-			// "plane offset" D used in calc
-			normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
-					+ (trng.defZPos[0] * normZ);
+		// normal vector from the two vectors of the triangle
+		normX = (vect1y * vect2z) - (vect1z * vect2y);
+		normY = -(vect2z * vect1x) + (vect2x * vect1z);
+		normZ = (vect1x * vect2y) - (vect1y * vect2x);
 
-			// final equation to compute visibility
-			return (eye * normZ) - normOffset;
-		} else if (trngnum == 2) {
-			// Triangle 2 normals
-			vect1x = trng.defXPos[3] - trng.defXPos[0];
-			vect1y = trng.defYPos[3] - trng.defYPos[0];
-			vect1z = trng.defZPos[3] - trng.defZPos[0];
+		// "plane offset" D used in calc
+		normOffset = (x3 * normX) - (y3 * normY) + (x3 * normZ);
 
-			vect2x = trng.defXPos[1] - trng.defXPos[0];
-			vect2y = trng.defYPos[1] - trng.defYPos[0];
-			vect2z = trng.defZPos[1] - trng.defZPos[0];
-
-			normX = (vect1y * vect2z) - (vect1z * vect2y);
-			normY = -(vect2z * vect1x) + (vect2x * vect1z);
-			normZ = (vect1x * vect2y) - (vect1y * vect2x);
-
-			normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
-					+ (trng.defZPos[0] * normZ);
-
-			return (eye * normZ) - normOffset;
-		} else if (trngnum == 3) {
-			// Triangle 3 normals
-			vect1x = trng.defXPos[4] - trng.defXPos[0];
-			vect1y = trng.defYPos[4] - trng.defYPos[0];
-			vect1z = trng.defZPos[4] - trng.defZPos[0];
-
-			vect2x = trng.defXPos[3] - trng.defXPos[0];
-			vect2y = trng.defYPos[3] - trng.defYPos[0];
-			vect2z = trng.defZPos[3] - trng.defZPos[0];
-
-			normX = (vect1y * vect2z) - (vect1z * vect2y);
-			normY = -(vect2z * vect1x) + (vect2x * vect1z);
-			normZ = (vect1x * vect2y) - (vect1y * vect2x);
-
-			normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
-					+ (trng.defZPos[0] * normZ);
-
-			return (eye * normZ) - normOffset;
-
-		} else if (trngnum == 4) {
-			// Triangle 4 normals
-			vect1x = trng.defXPos[2] - trng.defXPos[0];
-			vect1y = trng.defYPos[2] - trng.defYPos[0];
-			vect1z = trng.defZPos[2] - trng.defZPos[0];
-
-			vect2x = trng.defXPos[4] - trng.defXPos[0];
-			vect2y = trng.defYPos[4] - trng.defYPos[0];
-			vect2z = trng.defZPos[4] - trng.defZPos[0];
-
-			normX = (vect1y * vect2z) - (vect1z * vect2y);
-			normY = -(vect2z * vect1x) + (vect2x * vect1z);
-			normZ = (vect1x * vect2y) - (vect1y * vect2x);
-
-			normOffset = (trng.defXPos[0] * normX) - (trng.defYPos[0] * normY)
-					+ (trng.defZPos[0] * normZ);
-
-			return (eye * normZ) - normOffset;
-
-		} else if (trngnum == 5) {
-			// Triangle 5 normals
-			vect1x = trng.defXPos[3] - trng.defXPos[1];
-			vect1y = trng.defYPos[3] - trng.defYPos[1];
-			vect1z = trng.defZPos[3] - trng.defZPos[1];
-
-			vect2x = trng.defXPos[2] - trng.defXPos[1];
-			vect2y = trng.defYPos[2] - trng.defYPos[1];
-			vect2z = trng.defZPos[2] - trng.defZPos[1];
-
-			normX = (vect1y * vect2z) - (vect1z * vect2y);
-			normY = -(vect2z * vect1x) + (vect2x * vect1z);
-			normZ = (vect1x * vect2y) - (vect1y * vect2x);
-
-			normOffset = (trng.defXPos[3] * normX) - (trng.defYPos[3] * normY)
-					+ (trng.defZPos[3] * normZ);
-
-			return (eye * normZ) - normOffset;
-
-		} else if (trngnum == 6) {
-			// Triangle 6 normals
-			vect1x = trng.defXPos[2] - trng.defXPos[4];
-			vect1y = trng.defYPos[2] - trng.defYPos[4];
-			vect1z = trng.defZPos[2] - trng.defZPos[4];
-
-			vect2x = trng.defXPos[3] - trng.defXPos[4];
-			vect2y = trng.defYPos[3] - trng.defYPos[4];
-			vect2z = trng.defZPos[3] - trng.defZPos[4];
-
-			normX = (vect1y * vect2z) - (vect1z * vect2y);
-			normY = -(vect2z * vect1x) + (vect2x * vect1z);
-			normZ = (vect1x * vect2y) - (vect1y * vect2x);
-
-			normOffset = (trng.defXPos[3] * normX) - (trng.defYPos[3] * normY)
-					+ (trng.defZPos[3] * normZ);
-
-			return (eye * normZ) - normOffset;
-
-		} else {
+		// final equation to compute visibility
+		if (((eye * normZ) - normOffset) < 0) {
 			return -1;
 		}
-
+		return (eye * normZ) - normOffset;
 	}
 
 	public void calcMidPoints(Trangle trng) {
@@ -465,7 +470,7 @@ public class GraphicsProgram extends JFrame {
 		minZ = trng.defZPos[0];
 		maxZ = trng.defZPos[0];
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			if (minX > trng.defXPos[i])
 				minX = trng.defXPos[i];
 			if (maxX < trng.defXPos[i])
@@ -487,10 +492,10 @@ public class GraphicsProgram extends JFrame {
 
 	public void fillTrangle(double defx1, double defy1, double defz1,
 			double defx2, double defy2, double defz2, double defx3,
-			double defy3, double defz3, Graphics2D g2d, int trngnum,
-			Trangle trng) {
+			double defy3, double defz3, Graphics2D g2d, Trangle trng) {
 
-		double normalvalue = calcSurfaceNormals(trngnum, trng);
+		double normalvalue = calcTriangleNormal(defx1, defy1, defz1, defx2,
+				defy2, defz2, defx3, defy3, defz3);
 
 		double x1 = perspective(defx1, defz1);
 		double y1 = perspective(defy1, defz1);
@@ -661,39 +666,34 @@ public class GraphicsProgram extends JFrame {
 									/ (x[0] - x[1]);
 							for (int k = (int) x[1]; k < x[0]; k++) {
 
-								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
-									zBuffArray[k + xoff][i + yoff] = temp1;
+								if (temp1 <= zBuffArray[k + xoff][yoff - i]) {
+									zBuffArray[k + xoff][yoff - i] = temp1;
 
-									if (zBuffArray[k + xoff][i + yoff] != inf) {
-										if (polyfillnoedges) {
-											if (trng.thisNum == 1) {
-												g2d.setColor(Color.BLUE);
-											} else {
-												g2d.setColor(Color.RED);
-											}
+									if (polyfillnoedges) {
+										if (trng.thisNum == 1) {
+											g2d.setColor(Color.BLUE);
+										} else {
+											g2d.setColor(Color.RED);
+										}
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[1] || k >= (int) x[0]) {
+											g2d.setColor(Color.BLACK);
 											g2d.drawLine((k + xoff),
 													(yoff - i), (k + xoff),
 													(yoff - i));
 										} else {
-											if (k <= (int) x[1]
-													|| k >= (int) x[0]) {
-												g2d.setColor(Color.BLACK);
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
 												g2d.drawLine((k + xoff),
 														(yoff - i), (k + xoff),
 														(yoff - i));
-											} else {
-												g2d.setColor(Color.BLUE);
-												if (polyfilledges) {
-													g2d.drawLine((k + xoff),
-															(yoff - i),
-															(k + xoff),
-															(yoff - i));
-												}
 											}
 										}
 									}
 								} else {
-									zBuffArray[k + xoff][i + yoff] = inf;
+									zBuffArray[k + xoff][yoff - i] = inf;
 								}
 
 								temp1 = temp1 + temp1edge;
@@ -705,39 +705,34 @@ public class GraphicsProgram extends JFrame {
 									/ (x[1] - x[0]);
 							for (int k = (int) x[0]; k < x[1]; k++) {
 
-								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
-									zBuffArray[k + xoff][i + yoff] = temp1;
+								if (temp1 <= zBuffArray[k + xoff][yoff - i]) {
+									zBuffArray[k + xoff][yoff - i] = temp1;
 
-									if (zBuffArray[k + xoff][i + yoff] != inf) {
-										if (polyfillnoedges) {
-											if (trng.thisNum == 1) {
-												g2d.setColor(Color.BLUE);
-											} else {
-												g2d.setColor(Color.RED);
-											}
+									if (polyfillnoedges) {
+										if (trng.thisNum == 1) {
+											g2d.setColor(Color.BLUE);
+										} else {
+											g2d.setColor(Color.RED);
+										}
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[0] || k >= (int) x[1]) {
+											g2d.setColor(Color.BLACK);
 											g2d.drawLine((k + xoff),
 													(yoff - i), (k + xoff),
 													(yoff - i));
 										} else {
-											if (k <= (int) x[0]
-													|| k >= (int) x[1]) {
-												g2d.setColor(Color.BLACK);
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
 												g2d.drawLine((k + xoff),
 														(yoff - i), (k + xoff),
 														(yoff - i));
-											} else {
-												g2d.setColor(Color.BLUE);
-												if (polyfilledges) {
-													g2d.drawLine((k + xoff),
-															(yoff - i),
-															(k + xoff),
-															(yoff - i));
-												}
 											}
 										}
 									}
 								} else {
-									zBuffArray[k + xoff][i + yoff] = inf;
+									zBuffArray[k + xoff][yoff - i] = inf;
 								}
 								temp1 = temp1 + temp1edge;
 							}
@@ -759,40 +754,35 @@ public class GraphicsProgram extends JFrame {
 
 							for (int k = (int) x[1]; k < x[2]; k++) {
 
-								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
-									zBuffArray[k + xoff][i + yoff] = temp1;
+								if (temp1 <= zBuffArray[k + xoff][yoff - i]) {
+									zBuffArray[k + xoff][yoff - i] = temp1;
 
-									if (zBuffArray[k + xoff][i + yoff] != inf) {
-										if (polyfillnoedges) {
-											if (trng.thisNum == 1) {
-												g2d.setColor(Color.BLUE);
-											} else {
-												g2d.setColor(Color.RED);
-											}
+									if (polyfillnoedges) {
+										if (trng.thisNum == 1) {
+											g2d.setColor(Color.BLUE);
+										} else {
+											g2d.setColor(Color.RED);
+										}
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[1] || k >= (int) x[2]) {
+											g2d.setColor(Color.BLACK);
 											g2d.drawLine((k + xoff),
 													(yoff - i), (k + xoff),
 													(yoff - i));
 										} else {
-											if (k <= (int) x[1]
-													|| k >= (int) x[2]) {
-												g2d.setColor(Color.BLACK);
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
 												g2d.drawLine((k + xoff),
 														(yoff - i), (k + xoff),
 														(yoff - i));
-											} else {
-												g2d.setColor(Color.BLUE);
-												if (polyfilledges) {
-													g2d.drawLine((k + xoff),
-															(yoff - i),
-															(k + xoff),
-															(yoff - i));
-												}
 											}
-
 										}
+
 									}
 								} else {
-									zBuffArray[k + xoff][i + yoff] = inf;
+									zBuffArray[k + xoff][yoff - i] = inf;
 								}
 								temp1 = temp1 + temp1edge;
 							}
@@ -804,40 +794,35 @@ public class GraphicsProgram extends JFrame {
 
 							for (int k = (int) x[2]; k < x[1]; k++) {
 
-								if (temp1 <= zBuffArray[k + xoff][i + yoff]) {
-									zBuffArray[k + xoff][i + yoff] = temp1;
+								if (temp1 <= zBuffArray[k + xoff][yoff - i]) {
+									zBuffArray[k + xoff][yoff - i] = temp1;
 
-									if (zBuffArray[k + xoff][i + yoff] != inf) {
-										if (polyfillnoedges) {
-											if (trng.thisNum == 1) {
-												g2d.setColor(Color.BLUE);
-											} else {
-												g2d.setColor(Color.RED);
-											}
+									if (polyfillnoedges) {
+										if (trng.thisNum == 1) {
+											g2d.setColor(Color.BLUE);
+										} else {
+											g2d.setColor(Color.RED);
+										}
+										g2d.drawLine((k + xoff), (yoff - i),
+												(k + xoff), (yoff - i));
+									} else {
+										if (k <= (int) x[2] || k >= (int) x[1]) {
+											g2d.setColor(Color.BLACK);
 											g2d.drawLine((k + xoff),
 													(yoff - i), (k + xoff),
 													(yoff - i));
 										} else {
-											if (k <= (int) x[2]
-													|| k >= (int) x[1]) {
-												g2d.setColor(Color.BLACK);
+											g2d.setColor(Color.BLUE);
+											if (polyfilledges) {
 												g2d.drawLine((k + xoff),
 														(yoff - i), (k + xoff),
 														(yoff - i));
-											} else {
-												g2d.setColor(Color.BLUE);
-												if (polyfilledges) {
-													g2d.drawLine((k + xoff),
-															(yoff - i),
-															(k + xoff),
-															(yoff - i));
-												}
 											}
-
 										}
+
 									}
 								} else {
-									zBuffArray[k + xoff][i + yoff] = inf;
+									zBuffArray[k + xoff][yoff - i] = inf;
 								}
 								temp1 = temp1 + temp1edge;
 							}
@@ -1005,41 +990,157 @@ public class GraphicsProgram extends JFrame {
 
 			g2d.setColor(Color.BLACK); // front side
 
-			fillTrangle(polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
-					polyList.get(i).defZPos[2], polyList.get(i).defXPos[1],
-					polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
-					polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-					polyList.get(i).defZPos[0], g2d, 1, polyList.get(i));
-			// fillTrangle(polyList.get(i).defXPos[3],
-			// polyList.get(i).defYPos[3],
-			// polyList.get(i).defZPos[3], polyList.get(i).defXPos[1],
-			// polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
-			// polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-			// polyList.get(i).defZPos[0], g2d, 2, polyList.get(i));
-			// fillTrangle(polyList.get(i).defXPos[4],
-			// polyList.get(i).defYPos[4],
-			// polyList.get(i).defZPos[4], polyList.get(i).defXPos[3],
-			// polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
-			// polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-			// polyList.get(i).defZPos[0], g2d, 3, polyList.get(i));
-			// fillTrangle(polyList.get(i).defXPos[2],
-			// polyList.get(i).defYPos[2],
-			// polyList.get(i).defZPos[2], polyList.get(i).defXPos[4],
-			// polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
-			// polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
-			// polyList.get(i).defZPos[0], g2d, 4, polyList.get(i));
-			// fillTrangle(polyList.get(i).defXPos[3],
-			// polyList.get(i).defYPos[3],
-			// polyList.get(i).defZPos[3], polyList.get(i).defXPos[2],
-			// polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
-			// polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
-			// polyList.get(i).defZPos[1], g2d, 5, polyList.get(i));
-			// fillTrangle(polyList.get(i).defXPos[2],
-			// polyList.get(i).defYPos[2],
-			// polyList.get(i).defZPos[2], polyList.get(i).defXPos[3],
-			// polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
-			// polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
-			// polyList.get(i).defZPos[4], g2d, 6, polyList.get(i));
+			if (polyList.get(i).isPyrm == true) {
+				fillTrangle(polyList.get(i).defXPos[1],
+						polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
+						polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
+						polyList.get(i).defZPos[2], polyList.get(i).defXPos[0],
+						polyList.get(i).defYPos[0], polyList.get(i).defZPos[0],
+						g2d, polyList.get(i));
+				fillTrangle(polyList.get(i).defXPos[3],
+						polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+						polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
+						polyList.get(i).defZPos[1], polyList.get(i).defXPos[0],
+						polyList.get(i).defYPos[0], polyList.get(i).defZPos[0],
+						g2d, polyList.get(i));
+				fillTrangle(polyList.get(i).defXPos[4],
+						polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
+						polyList.get(i).defXPos[3], polyList.get(i).defYPos[3],
+						polyList.get(i).defZPos[3], polyList.get(i).defXPos[0],
+						polyList.get(i).defYPos[0], polyList.get(i).defZPos[0],
+						g2d, polyList.get(i));
+				fillTrangle(polyList.get(i).defXPos[2],
+						polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
+						polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
+						polyList.get(i).defZPos[4], polyList.get(i).defXPos[0],
+						polyList.get(i).defYPos[0], polyList.get(i).defZPos[0],
+						g2d, polyList.get(i));
+				fillTrangle(polyList.get(i).defXPos[3],
+						polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+						polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
+						polyList.get(i).defZPos[2], polyList.get(i).defXPos[1],
+						polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
+						g2d, polyList.get(i));
+				fillTrangle(polyList.get(i).defXPos[2],
+						polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
+						polyList.get(i).defXPos[3], polyList.get(i).defYPos[3],
+						polyList.get(i).defZPos[3], polyList.get(i).defXPos[4],
+						polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
+						g2d, polyList.get(i));
+			} else {
+				//1 - 1 
+				fillTrangle(polyList.get(i).defXPos[0],
+						polyList.get(i).defYPos[0], polyList.get(i).defZPos[0],
+						polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
+						polyList.get(i).defZPos[1], polyList.get(i).defXPos[8],
+						polyList.get(i).defYPos[8], polyList.get(i).defZPos[8],
+						g2d, polyList.get(i));
+				//1 - 2
+				fillTrangle(polyList.get(i).defXPos[1],
+						polyList.get(i).defYPos[1], polyList.get(i).defZPos[1],
+						polyList.get(i).defXPos[8], polyList.get(i).defYPos[8],
+						polyList.get(i).defZPos[8], polyList.get(i).defXPos[9],
+						polyList.get(i).defYPos[9], polyList.get(i).defZPos[9],
+						g2d, polyList.get(i));
+				//2 - 1
+				fillTrangle(polyList.get(i).defXPos[2],
+						polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
+						polyList.get(i).defXPos[1], polyList.get(i).defYPos[1],
+						polyList.get(i).defZPos[1], polyList.get(i).defXPos[9],
+						polyList.get(i).defYPos[9], polyList.get(i).defZPos[9],
+						g2d, polyList.get(i));
+				//2 - 2
+				fillTrangle(polyList.get(i).defXPos[2],
+						polyList.get(i).defYPos[2], polyList.get(i).defZPos[2],
+						polyList.get(i).defXPos[10], polyList.get(i).defYPos[10],
+						polyList.get(i).defZPos[10], polyList.get(i).defXPos[9],
+						polyList.get(i).defYPos[9], polyList.get(i).defZPos[9],
+						g2d, polyList.get(i));
+				//3 - 1
+				fillTrangle(polyList.get(i).defXPos[3],
+						polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+						polyList.get(i).defXPos[2], polyList.get(i).defYPos[2],
+						polyList.get(i).defZPos[2], polyList.get(i).defXPos[10],
+						polyList.get(i).defYPos[10], polyList.get(i).defZPos[10],
+						g2d, polyList.get(i));
+				//3 - 2
+				fillTrangle(polyList.get(i).defXPos[3],
+						polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+						polyList.get(i).defXPos[10], polyList.get(i).defYPos[10],
+						polyList.get(i).defZPos[10], polyList.get(i).defXPos[11],
+						polyList.get(i).defYPos[11], polyList.get(i).defZPos[11],
+						g2d, polyList.get(i));
+				//4 - 1
+				fillTrangle(polyList.get(i).defXPos[3],
+						polyList.get(i).defYPos[3], polyList.get(i).defZPos[3],
+						polyList.get(i).defXPos[4], polyList.get(i).defYPos[4],
+						polyList.get(i).defZPos[4], polyList.get(i).defXPos[11],
+						polyList.get(i).defYPos[11], polyList.get(i).defZPos[11],
+						g2d, polyList.get(i));
+				//4 - 2
+				fillTrangle(polyList.get(i).defXPos[4],
+						polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
+						polyList.get(i).defXPos[11], polyList.get(i).defYPos[11],
+						polyList.get(i).defZPos[11], polyList.get(i).defXPos[12],
+						polyList.get(i).defYPos[12], polyList.get(i).defZPos[12],
+						g2d, polyList.get(i));
+				//5 - 1
+				fillTrangle(polyList.get(i).defXPos[4],
+						polyList.get(i).defYPos[4], polyList.get(i).defZPos[4],
+						polyList.get(i).defXPos[5], polyList.get(i).defYPos[5],
+						polyList.get(i).defZPos[5], polyList.get(i).defXPos[12],
+						polyList.get(i).defYPos[12], polyList.get(i).defZPos[12],
+						g2d, polyList.get(i));
+				//5 - 2
+				fillTrangle(polyList.get(i).defXPos[5],
+						polyList.get(i).defYPos[5], polyList.get(i).defZPos[5],
+						polyList.get(i).defXPos[13], polyList.get(i).defYPos[13],
+						polyList.get(i).defZPos[13], polyList.get(i).defXPos[12],
+						polyList.get(i).defYPos[12], polyList.get(i).defZPos[12],
+						g2d, polyList.get(i));
+				//6 - 1
+				fillTrangle(polyList.get(i).defXPos[5],
+						polyList.get(i).defYPos[5], polyList.get(i).defZPos[5],
+						polyList.get(i).defXPos[6], polyList.get(i).defYPos[6],
+						polyList.get(i).defZPos[6], polyList.get(i).defXPos[13],
+						polyList.get(i).defYPos[13], polyList.get(i).defZPos[13],
+						g2d, polyList.get(i));
+				//6 - 2
+				fillTrangle(polyList.get(i).defXPos[6],
+						polyList.get(i).defYPos[6], polyList.get(i).defZPos[6],
+						polyList.get(i).defXPos[13], polyList.get(i).defYPos[13],
+						polyList.get(i).defZPos[13], polyList.get(i).defXPos[14],
+						polyList.get(i).defYPos[14], polyList.get(i).defZPos[14],
+						g2d, polyList.get(i));
+				//7 - 1
+				fillTrangle(polyList.get(i).defXPos[6],
+						polyList.get(i).defYPos[6], polyList.get(i).defZPos[6],
+						polyList.get(i).defXPos[7], polyList.get(i).defYPos[7],
+						polyList.get(i).defZPos[7], polyList.get(i).defXPos[14],
+						polyList.get(i).defYPos[14], polyList.get(i).defZPos[14],
+						g2d, polyList.get(i));
+				//7 - 2
+				fillTrangle(polyList.get(i).defXPos[7],
+						polyList.get(i).defYPos[7], polyList.get(i).defZPos[7],
+						polyList.get(i).defXPos[14], polyList.get(i).defYPos[14],
+						polyList.get(i).defZPos[14], polyList.get(i).defXPos[15],
+						polyList.get(i).defYPos[15], polyList.get(i).defZPos[15],
+						g2d, polyList.get(i));
+				//8 - 1
+				fillTrangle(polyList.get(i).defXPos[7],
+						polyList.get(i).defYPos[7], polyList.get(i).defZPos[7],
+						polyList.get(i).defXPos[0], polyList.get(i).defYPos[0],
+						polyList.get(i).defZPos[0], polyList.get(i).defXPos[15],
+						polyList.get(i).defYPos[15], polyList.get(i).defZPos[15],
+						g2d, polyList.get(i));
+				//8 - 2
+				fillTrangle(polyList.get(i).defXPos[0],
+						polyList.get(i).defYPos[0], polyList.get(i).defZPos[0],
+						polyList.get(i).defXPos[15], polyList.get(i).defYPos[15],
+						polyList.get(i).defZPos[15], polyList.get(i).defXPos[8],
+						polyList.get(i).defYPos[8], polyList.get(i).defZPos[8],
+						g2d, polyList.get(i));
+			}
 
 			g2d.setColor(Color.BLACK); // front side
 
@@ -1059,7 +1160,7 @@ public class GraphicsProgram extends JFrame {
 	 */
 	public void moveUp(Trangle trng) {
 		Boolean actionBool = false;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			if (!(trng.currYPos[i] >= (height / 2))) {
 				actionBool = true;
 			} else {
@@ -1071,7 +1172,7 @@ public class GraphicsProgram extends JFrame {
 		calcMidPoints(trng);
 
 		if (actionBool == true) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < trng.defXPos.length; i++) {
 				trng.defYPos[i] = trng.defYPos[i] + 10;
 			}
 			trng.midYPnt = trng.midYPnt + 10;
@@ -1087,7 +1188,7 @@ public class GraphicsProgram extends JFrame {
 	 */
 	public void moveDwn(Trangle trng) {
 		Boolean actionBool = false;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			if (!(trng.currYPos[i] <= -height / 2)) {
 				actionBool = true;
 			} else {
@@ -1099,7 +1200,7 @@ public class GraphicsProgram extends JFrame {
 		calcMidPoints(trng);
 
 		if (actionBool == true) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < trng.defXPos.length; i++) {
 				trng.defYPos[i] = trng.defYPos[i] - 10;
 			}
 			trng.midYPnt = trng.midYPnt - 10;
@@ -1115,7 +1216,7 @@ public class GraphicsProgram extends JFrame {
 	 */
 	public void moveRght(Trangle trng) {
 		Boolean actionBool = false;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			if (!(trng.currXPos[i] >= width / 2)) {
 				actionBool = true;
 			} else {
@@ -1127,7 +1228,7 @@ public class GraphicsProgram extends JFrame {
 		calcMidPoints(trng);
 
 		if (actionBool == true) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < trng.defXPos.length; i++) {
 				trng.defXPos[i] = trng.defXPos[i] + 10;
 			}
 			trng.midXPnt = trng.midXPnt + 10;
@@ -1143,7 +1244,7 @@ public class GraphicsProgram extends JFrame {
 	 */
 	public void moveLft(Trangle trng) {
 		Boolean actionBool = false;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			if (!(trng.currXPos[i] <= -(width / 2))) {
 				actionBool = true;
 			} else {
@@ -1155,7 +1256,7 @@ public class GraphicsProgram extends JFrame {
 		calcMidPoints(trng);
 
 		if (actionBool == true) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < trng.defXPos.length; i++) {
 				trng.defXPos[i] = trng.defXPos[i] - 10;
 			}
 			trng.midXPnt = trng.midXPnt - 10;
@@ -1171,7 +1272,7 @@ public class GraphicsProgram extends JFrame {
 	 */
 	public void scaleUp(Trangle trng) {
 		Boolean actionBool = false;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			if (!(trng.currXPos[i] >= width / 2
 					|| trng.currYPos[i] >= height / 2
 					|| trng.currYPos[i] <= -height / 2 || trng.currXPos[i] <= -(width / 2))) {
@@ -1185,7 +1286,7 @@ public class GraphicsProgram extends JFrame {
 		calcMidPoints(trng);
 
 		if (actionBool == true) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < trng.defXPos.length; i++) {
 				trng.defXPos[i] = trng.defXPos[i] - trng.midXPnt;
 				trng.defYPos[i] = trng.defYPos[i] - trng.midYPnt;
 				trng.defZPos[i] = trng.defZPos[i] - trng.midZPnt;
@@ -1210,7 +1311,7 @@ public class GraphicsProgram extends JFrame {
 
 		calcMidPoints(trng);
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			trng.defXPos[i] = trng.defXPos[i] - trng.midXPnt;
 			trng.defYPos[i] = trng.defYPos[i] - trng.midYPnt;
 			trng.defZPos[i] = trng.defZPos[i] - trng.midZPnt;
@@ -1234,7 +1335,7 @@ public class GraphicsProgram extends JFrame {
 
 		calcMidPoints(trng);
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			trng.defZPos[i] = trng.defZPos[i] - 100;
 		}
 		trng.midZPnt = trng.midZPnt - 100;
@@ -1251,7 +1352,7 @@ public class GraphicsProgram extends JFrame {
 
 		calcMidPoints(trng);
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			trng.defZPos[i] = trng.defZPos[i] + 100;
 		}
 		trng.midZPnt = trng.midZPnt + 100;
@@ -1272,7 +1373,7 @@ public class GraphicsProgram extends JFrame {
 
 		calcMidPoints(trng);
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			double currX = trng.defXPos[i] - trng.midXPnt;
 			double currY = trng.defYPos[i] - trng.midYPnt;
 			double tempX = (currX * Math.cos(theta) - currY * Math.sin(theta));
@@ -1300,7 +1401,7 @@ public class GraphicsProgram extends JFrame {
 
 		calcMidPoints(trng);
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			double currX = trng.defXPos[i] - trng.midXPnt;
 			double currZ = trng.defZPos[i] - trng.midZPnt;
 			double tempX = (currX * Math.cos(theta) - currZ * Math.sin(theta));
@@ -1327,7 +1428,7 @@ public class GraphicsProgram extends JFrame {
 		}
 
 		calcMidPoints(trng);
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < trng.defXPos.length; i++) {
 			double currY = trng.defYPos[i] - trng.midYPnt;
 			double currZ = trng.defZPos[i] - trng.midZPnt;
 			double tempY = (currY * Math.cos(theta) - currZ * Math.sin(theta));
